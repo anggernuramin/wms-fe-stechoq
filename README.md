@@ -1,6 +1,5 @@
 # Werehouse Management System
-
-    Warehouse Management System (WMS) adalah sistem perangkat lunak yang digunakan untuk mengelola operasi sehari-hari di gudang, termasuk pengelolaan stok, pelacakan inventaris, pemrosesan pesanan, dan pengelolaan ruang penyimpanan.
+Warehouse Management System (WMS) adalah sistem perangkat lunak yang digunakan untuk mengelola operasi sehari-hari di gudang, termasuk pengelolaan stok, pelacakan inventaris, pemrosesan pesanan, dan pengelolaan ruang penyimpanan.
 
 ## Instalasi
 
@@ -28,8 +27,7 @@ Jika Anda baru di project ini, silakan ikuti langkah-langkah instalasi berikut:
 
 ### Peringatan Penting
 
-Jangan push langsung ke branch "main" (branch haram).
-Sebagai gantinya kita akan collaborasi di branch "develop"
+kita akan collaborasi di branch "main"
 
 ### Ikuti langkah-langkah berikut untuk berkontribusi pada project ini.
 
