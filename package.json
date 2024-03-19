@@ -1,0 +1,57 @@
+{
+  "name": "wms-fe-vue",
+  "description": "type: Project Werehouse management system | role: Frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "keywords": [
+    "warehouse",
+    "management",
+    "frontend",
+    "Vue",
+    "inventory"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "autoprefixer": "^10.4.18",
+    "postcss": "^8.4.36",
+    "tailwindcss": "^3.4.1",
+    "vite": "^5.1.6"
+  },
+  "authors": [
+    "Angger Nur",
+    "Haikal",
+    "Adinne"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anggernuramin/wms-fe-stechoq"
+  },
+  "bugs": {
+    "url": "https://github.com/anggernuramin/wms-fe-stechoq/issues"
+  },
+  "homepage": "http://localhost:5173/",
+  "contributors": [
+    {
+      "name": "Angger Nur Amin",
+      "email": "anggern514@gmail.com"
+    },
+    {
+      "name": "Haikal Abror",
+      "email": "emailkontributor2@example.com"
+    },
+    {
+      "name": "Adinne",
+      "email": "emailkontributor2@example.com"
+    }
+  ]
+}
