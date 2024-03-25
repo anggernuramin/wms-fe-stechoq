@@ -1,4 +1,5 @@
 <template>
+  <navbar/>
   <div>
     <nav class="flex justify-center items-center gap-3">
       <router-link to="/login" class="text-2xl cursor-pointer"
@@ -15,6 +16,7 @@
 
 <script setup>
 
+import navbar from '../components/Navbar.vue'
 
 
 </script>
