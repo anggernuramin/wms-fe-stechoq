@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.btn-sm-success {
+  @apply bg-btnPrimary text-sm px-[10px] py-[4px] rounded-md border-0 outline-none text-primary font-medium;
+}
+
+.btn-sm-default {
+  @apply bg-secondary text-sm px-[10px] py-[4px]  text-TxtPrimary-700 rounded-md border border-gray-300 outline-none font-medium;
+}
+.sidebar {
+  transition: width 0.3s ease-in-out;
+}
+.sidebar-collapse {
+  transition: margin 0.3s ease-in-out;
+  -webkit-transition: margin 0.3s ease-in-out;
+  -moz-transition: margin 0.3s ease-in-out;
+  -ms-transition: margin 0.3s ease-in-out;
+  -o-transition: margin 0.3s ease-in-out;
+}

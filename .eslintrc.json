@@ -12,6 +12,6 @@
   "plugins": ["vue", "prettier"],
   "ignorePatterns": ["**/node_module/*", "**/build/*"],
   "rules": {
-    // "vue/multi-word-component-names": "off"
+    "vue/multi-word-component-names": "off"
   }
 }
