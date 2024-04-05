@@ -2,7 +2,6 @@
 import { useStore } from 'vuex'
 import Sidebar from '../components/Sidebar.vue'
 const store = useStore()
-console.log(store.state.isSidebarOpen)
 </script>
 <template>
   <div>
