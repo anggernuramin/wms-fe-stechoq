@@ -1,23 +1,29 @@
+<script setup>
+import { useRoute } from 'vue-router'
+
+const location = useRoute()
+</script>
+
 <template>
   <div class="overflow-x-auto">
     <section class="rounded-md shadow-md bg-secondary">
       <header class="flex items-center justify-between w-full px-5 pt-3 overflow-hidden rounded-md">
         <h1 class="font-medium text-md text-slate-700">
-          <router-link to="/" class="text-slate-400">Dashboard</router-link> / Barang Masuk
+          <router-link to="/" class="text-slate-400">Dashboard</router-link> / {{ location?.name }}
         </h1>
         <div class="flex gap-3">
           <button class="flex items-center justify-center gap-2 btn-sm-default">
             <i class="fas fa-filter"></i>Export
           </button>
-          <button onclick="modal_tambah_data.showModal()" class="flex items-center justify-center gap-2 btn-sm-success">
-            <i class="fas fa-plus"></i>Tambah Barang Masuk
-          </button>
+          <router-link to="/products/add" class="flex items-center justify-center gap-2 bg-red-400 btn-sm-success">
+            <i class="fas fa-plus"></i>Tambah Product
+          </router-link>
         </div>
       </header>
       <hr class="my-4" />
 
       <div class="flex items-center justify-between px-5 pb-4">
-        <h1 class="text-lg font-semibold text-TxtPrimary-700">Barang Masuk</h1>
+        <h1 class="text-lg font-semibold text-TxtPrimary-700">Product</h1>
         <div class="flex items-center gap-5">
           <form action="" class="outline-none">
             <label class="py-[6px] px-2 flex items-center rounded-md border text-slate-600 gap-2 bg-secondary">
@@ -49,6 +55,19 @@
               <li><a>Vivo</a></li>
             </ul>
           </div>
+          <div class="border rounded-md dropdown dropdown-end">
+            <div
+              tabindex="0"
+              role="button"
+              class="py-[4px] m-1 bg-secondary flex justify-center items-center gap-5 text-sm px-5"
+            >
+              Lokasi <i class="text-xs fas fa-chevron-down"></i>
+            </div>
+            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-primary rounded-box w-52">
+              <li><a>Oppo</a></li>
+              <li><a>Vivo</a></li>
+            </ul>
+          </div>
         </div>
       </div>
       <table class="table rounded-sm">
@@ -56,54 +75,71 @@
         <thead class="bg-zinc-50">
           <tr class="text-sm font-light text-slate-700 border-b-slate-100">
             <th class="font-medium">#</th>
-            <th class="font-medium">Kode Barang</th>
-            <th class="font-medium">Tanggal</th>
-            <th class="font-medium">Customer</th>
+            <th class="font-medium">Id. Product</th>
             <th class="font-medium">Item</th>
-            <th class="font-medium">Keterangan</th>
+            <th class="font-medium">Varian</th>
+            <th class="font-medium">Category</th>
+            <th class="font-medium">Price</th>
+            <th class="font-medium">Action</th>
           </tr>
         </thead>
         <tbody class="text-xs font-light text-TxtPrimary-700">
           <!-- row 1 -->
           <tr class="font-normal border-b-slate-100">
             <td>1</td>
-            <td>BM001</td>
-            <td>24-Maret-2024</td>
-            <td>Kawi Departemen Store</td>
+            <td>001</td>
             <td>VIVO Y02 3/32</td>
-            <td>Malang-Surabaya</td>
+            <td>VIVO Y02 3/32 GREY</td>
+            <td>VIVO</td>
+            <td>1.200.000</td>
+            <td class="flex gap-3">
+              <i class="text-[14px] text-warning fa fa-pencil" aria-hidden="true"></i>
+              <router-link to="/products/delete/1">
+                <i class="text-[14px] text-error fa fa-trash" aria-hidden="true"></i>
+              </router-link>
+            </td>
           </tr>
           <tr class="font-normal border-b-slate-100">
-            <td>1</td>
-            <td>BM001</td>
-            <td>24-Maret-2024</td>
-            <td>Kawi Departemen Store</td>
-            <td>VIVO Y02 3/32</td>
-            <td>Malang-Surabaya</td>
+            <td>2</td>
+            <td>002</td>
+            <td>SAM A057 A05S 6/128</td>
+            <td>SAM A057 A05S 6/128 BLACK</td>
+            <td>SAM</td>
+            <td>1.200.000</td>
+            <td class="flex gap-3">
+              <i class="text-[14px] text-warning fa fa-pencil" aria-hidden="true"></i>
+              <router-link to="/products/delete/1">
+                <i class="text-[14px] text-error fa fa-trash" aria-hidden="true"></i>
+              </router-link>
+            </td>
           </tr>
           <tr class="font-normal border-b-slate-100">
-            <td>1</td>
-            <td>BM001</td>
-            <td>24-Maret-2024</td>
-            <td>Kawi Departemen Store</td>
-            <td>VIVO Y02 3/32</td>
-            <td>Malang-Surabaya</td>
+            <td>3</td>
+            <td>003</td>
+            <td>REDMI NOTE 13 PR0 8/256</td>
+            <td>REDMI NOTE 13 PR0 8/256 GREY</td>
+            <td>REDMI</td>
+            <td>1.200.000</td>
+            <td class="flex gap-3">
+              <i class="text-[14px] text-warning fa fa-pencil" aria-hidden="true"></i>
+              <router-link to="/products/delete/1">
+                <i class="text-[14px] text-error fa fa-trash" aria-hidden="true"></i>
+              </router-link>
+            </td>
           </tr>
           <tr class="font-normal border-b-slate-100">
-            <td>1</td>
-            <td>BM001</td>
-            <td>24-Maret-2024</td>
-            <td>Kawi Departemen Store</td>
-            <td>VIVO Y02 3/32</td>
-            <td>Malang-Surabaya</td>
-          </tr>
-          <tr class="font-normal border-b-slate-100">
-            <td>1</td>
-            <td>BM001</td>
-            <td>24-Maret-2024</td>
-            <td>Kawi Departemen Store</td>
-            <td>VIVO Y02 3/32</td>
-            <td>Malang-Surabaya</td>
+            <td>4</td>
+            <td>004</td>
+            <td>IPHONE 11 64GB</td>
+            <td>IPHONE 11 64GB TAM WHITE</td>
+            <td>IPHONE</td>
+            <td>1.200.000</td>
+            <td class="flex gap-3">
+              <i class="text-[14px] text-warning fa fa-pencil" aria-hidden="true"></i>
+              <router-link to="/products/delete/1">
+                <i class="text-[14px] text-error fa fa-trash" aria-hidden="true"></i>
+              </router-link>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -128,4 +164,5 @@
       </div>
     </div>
   </dialog>
+  <router-view></router-view>
 </template>

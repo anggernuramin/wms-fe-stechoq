@@ -9,13 +9,21 @@
 .btn-sm-default {
   @apply bg-secondary text-sm px-[10px] py-[4px]  text-TxtPrimary-700 rounded-md border border-gray-300 outline-none font-medium;
 }
+.btn-sidebar {
+  @apply flex items-center justify-start w-full gap-3 p-2 px-3 transition-all rounded-md bg-secondary hover:bg-slate-100;
+}
 .sidebar {
   transition: width 0.3s ease-in-out;
+  -webkit-transition: width 0.3s ease-in-out;
+  -moz-transition: width 0.3s ease-in-out;
+  -ms-transition: width 0.3s ease-in-out;
+  -o-transition: width 0.3s ease-in-out;
 }
-.sidebar-collapse {
-  transition: margin 0.3s ease-in-out;
-  -webkit-transition: margin 0.3s ease-in-out;
-  -moz-transition: margin 0.3s ease-in-out;
-  -ms-transition: margin 0.3s ease-in-out;
-  -o-transition: margin 0.3s ease-in-out;
+
+.display-collapse {
+  transition: height 0.3s ease-in-out;
+  -webkit-transition: height 0.3s ease-in-out;
+  -moz-transition: height 0.3s ease-in-out;
+  -ms-transition: height 0.3s ease-in-out;
+  -o-transition: height 0.3s ease-in-out;
 }

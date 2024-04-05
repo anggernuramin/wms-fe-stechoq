@@ -14,6 +14,23 @@ const router = createRouter({
       component: () => import('../layouts/Dashboard.vue'),
       children: [
         {
+          path: 'products',
+          name: 'Products',
+          component: () => import('../views/Products.vue'),
+          children: [
+            {
+              path: 'add',
+              name: 'Add Products',
+              component: () => import('../views/product/add.vue')
+            },
+            {
+              path: 'delete/:id',
+              name: 'Delete Products',
+              component: () => import('../views/product/delete.vue')
+            }
+          ]
+        },
+        {
           path: '',
           name: 'Home',
           component: () => import('../views/HomePage.vue')
