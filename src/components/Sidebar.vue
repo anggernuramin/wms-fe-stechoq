@@ -6,6 +6,8 @@ import { useRoute } from 'vue-router'
 const location = useRoute()
 const store = useStore()
 const isOpenLaporan = ref(false)
+const isOpenProduct = ref(false)
+
 const toggleSidebar = () => {
   isOpenLaporan.value = false
   store.commit('toogleSidebar')
@@ -13,6 +15,9 @@ const toggleSidebar = () => {
 
 const openOptionLaporan = () => {
   isOpenLaporan.value = !isOpenLaporan.value
+}
+const openOptionProduct = () => {
+  isOpenProduct.value = !isOpenProduct.value
 }
 </script>
 
@@ -88,21 +93,60 @@ const openOptionLaporan = () => {
       </li>
 
       <h3 class="my-2 text-xs font-medium text-TxtPrimary-700 ps-3" :class="{ hidden: !store.state.isSidebarOpen }">
-        Barang
+        PRODUK
       </h3>
-      <li class="w-full">
+      <li class="w-full mb-1">
+        <router-link
+          to="/barang-masuk"
+          class="flex items-center justify-start w-full gap-3 p-2 px-3 font-medium rounded-md text-TxtPrimary-70 hover:bg-slate-100"
+          :class="{
+            'bg-btnPrimary  text-slate-50': location.path === '/kartu-stock',
+            'bg-secondary text-TxtPrimary-700': location.path !== '/kartu-stock'
+          }"
+        >
+          <i class="text-md fas fa-briefcase"></i>
+          <h2 class="text-sm" :class="{ hidden: !store.state.isSidebarOpen }">Kartu Stok</h2>
+        </router-link>
+      </li>
+      <li class="w-full cursor-pointer">
         <router-link
           to="/products"
           class="flex items-center justify-start w-full gap-3 p-2 px-3 font-medium rounded-md text-TxtPrimary-70"
           :class="{
-            'bg-btnPrimary  text-slate-50': location.path === '/products',
-            'bg-secondary text-TxtPrimary-700': location.path !== '/products'
+            'bg-btnPrimary  text-slate-50': location.name.includes('products'),
+            'bg-secondary text-TxtPrimary-700': !location.name.includes('products')
           }"
+          @click="openOptionProduct"
         >
-          <i class="text-md fas fa-briefcase"></i>
-          <h2 class="text-sm" :class="{ hidden: !store.state.isSidebarOpen }">Product</h2>
+          <i class="text-md fas fa-solid fa-bag-shopping"></i>
+          <h2
+            class="flex items-center justify-between w-full text-sm font-medium"
+            :class="{ hidden: !store.state.isSidebarOpen }"
+          >
+            Products
+            <i class="text-xs transition-all fas" :class="isOpenProduct ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+          </h2>
         </router-link>
+        <ul
+          :style="{ height: isOpenProduct ? '40px' : '0px' }"
+          class="flex flex-col gap-1 mt-[6px] overflow-hidden transition display-collapse animated faster"
+        >
+          <li class="w-full">
+            <router-link
+              to="/products/category"
+              class="flex items-center justify-start w-full gap-3 p-2 font-medium rounded-md ps-9 pe-3"
+              :class="{
+                'bg-btnPrimary  text-slate-50 hover:bg-btnPrimary': location.name.includes('category'),
+                'bg-secondary text-TxtPrimary-700 hover:bg-slate-100': !location.name.includes('category')
+              }"
+            >
+              <i class="fa-solid fa-tags"></i>
+              <h2 class="text-sm font-medium" :class="{ hidden: !store.state.isSidebarOpen }">Category</h2>
+            </router-link>
+          </li>
+        </ul>
       </li>
+
       <li class="w-full">
         <router-link
           to="/barang-masuk"
@@ -116,32 +160,7 @@ const openOptionLaporan = () => {
           <h2 class="text-sm" :class="{ hidden: !store.state.isSidebarOpen }">Barang Masuk</h2>
         </router-link>
       </li>
-      <li class="w-full">
-        <router-link
-          to="/barang-masuk"
-          class="flex items-center justify-start w-full gap-3 p-2 px-3 font-medium rounded-md text-TxtPrimary-70"
-          :class="{
-            'bg-btnPrimary  text-slate-50': location.path === '/kategory-product',
-            'bg-secondary text-TxtPrimary-700': location.path !== '/kategory-product'
-          }"
-        >
-          <i class="text-md fas fa-briefcase"></i>
-          <h2 class="text-sm" :class="{ hidden: !store.state.isSidebarOpen }">Kategori Produk</h2>
-        </router-link>
-      </li>
-      <li class="w-full">
-        <router-link
-          to="/barang-masuk"
-          class="flex items-center justify-start w-full gap-3 p-2 px-3 font-medium rounded-md text-TxtPrimary-70"
-          :class="{
-            'bg-btnPrimary  text-slate-50': location.path === '/kartu-stock',
-            'bg-secondary text-TxtPrimary-700': location.path !== '/kartu-stock'
-          }"
-        >
-          <i class="text-md fas fa-briefcase"></i>
-          <h2 class="text-sm" :class="{ hidden: !store.state.isSidebarOpen }">Kartu Stok</h2>
-        </router-link>
-      </li>
+
       <li class="w-full">
         <router-link
           to="/barang-masuk"

@@ -70,73 +70,31 @@ const location = useRoute()
           </div>
         </div>
       </div>
+
       <table class="table rounded-sm">
         <!-- head -->
         <thead class="bg-zinc-50">
           <tr class="text-sm font-light text-slate-700 border-b-slate-100">
             <th class="font-medium">#</th>
             <th class="font-medium">Id. Product</th>
-            <th class="font-medium">Item</th>
-            <th class="font-medium">Varian</th>
+            <th class="font-medium">Product</th>
             <th class="font-medium">Category</th>
             <th class="font-medium">Price</th>
             <th class="font-medium">Action</th>
           </tr>
         </thead>
         <tbody class="text-xs font-light text-TxtPrimary-700">
-          <!-- row 1 -->
-          <tr class="font-normal border-b-slate-100">
-            <td>1</td>
-            <td>001</td>
-            <td>VIVO Y02 3/32</td>
-            <td>VIVO Y02 3/32 GREY</td>
-            <td>VIVO</td>
-            <td>1.200.000</td>
-            <td class="flex gap-3">
-              <i class="text-[14px] text-warning fa fa-pencil" aria-hidden="true"></i>
-              <router-link to="/products/delete/1">
-                <i class="text-[14px] text-error fa fa-trash" aria-hidden="true"></i>
-              </router-link>
-            </td>
-          </tr>
-          <tr class="font-normal border-b-slate-100">
-            <td>2</td>
-            <td>002</td>
-            <td>SAM A057 A05S 6/128</td>
-            <td>SAM A057 A05S 6/128 BLACK</td>
-            <td>SAM</td>
-            <td>1.200.000</td>
-            <td class="flex gap-3">
-              <i class="text-[14px] text-warning fa fa-pencil" aria-hidden="true"></i>
-              <router-link to="/products/delete/1">
-                <i class="text-[14px] text-error fa fa-trash" aria-hidden="true"></i>
-              </router-link>
-            </td>
-          </tr>
-          <tr class="font-normal border-b-slate-100">
-            <td>3</td>
-            <td>003</td>
-            <td>REDMI NOTE 13 PR0 8/256</td>
-            <td>REDMI NOTE 13 PR0 8/256 GREY</td>
-            <td>REDMI</td>
-            <td>1.200.000</td>
-            <td class="flex gap-3">
-              <i class="text-[14px] text-warning fa fa-pencil" aria-hidden="true"></i>
-              <router-link to="/products/delete/1">
-                <i class="text-[14px] text-error fa fa-trash" aria-hidden="true"></i>
-              </router-link>
-            </td>
-          </tr>
           <tr class="font-normal border-b-slate-100">
             <td>4</td>
             <td>004</td>
             <td>IPHONE 11 64GB</td>
-            <td>IPHONE 11 64GB TAM WHITE</td>
             <td>IPHONE</td>
             <td>1.200.000</td>
             <td class="flex gap-3">
-              <i class="text-[14px] text-warning fa fa-pencil" aria-hidden="true"></i>
-              <router-link to="/products/delete/1">
+              <router-link to="/products/edit/1" class="cursor-pointer">
+                <i class="text-[14px] text-warning fa fa-pencil" aria-hidden="true"></i>
+              </router-link>
+              <router-link to="/products/delete/1" class="cursor-pointer">
                 <i class="text-[14px] text-error fa fa-trash" aria-hidden="true"></i>
               </router-link>
             </td>
@@ -152,17 +110,16 @@ const location = useRoute()
   </div>
 
   <!-- Put this part before </body> tag -->
-  <dialog id="modal_tambah_data" class="modal">
+  <!-- <dialog id="modal_tambah_data" class="modal">
     <div class="rounded-md modal-box bg-secondary">
       <h3 class="text-lg font-bold">Hello!</h3>
       <p class="py-4">Press ESC key or click the button below to close</p>
       <div class="modal-action">
         <form method="dialog">
-          <!-- if there is a button in form, it will close the modal -->
           <button class="btn bg-btnPrimary">Close</button>
         </form>
       </div>
     </div>
-  </dialog>
+  </dialog> -->
   <router-view></router-view>
 </template>
