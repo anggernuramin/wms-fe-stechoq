@@ -9,9 +9,6 @@
 </template>
 
 <script setup>
-import { useRoute } from 'vue-router'
-import { onMounted, watch } from 'vue'
-
 const props = defineProps({
   to: {
     type: String,

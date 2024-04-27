@@ -6,18 +6,34 @@
   @apply bg-btnPrimary text-sm px-[10px] py-[4px] rounded-md border-0 outline-none text-primary font-medium;
 }
 
+.btn-md-success {
+  @apply px-3 py-2 text-sm font-medium border-0 rounded-md outline-none bg-btnPrimary text-primary;
+}
+.btn-md-error {
+  @apply px-4 py-2 text-sm font-medium bg-red-800 border-0 rounded-md outline-none text-primary;
+}
+
 .btn-sm-default {
   @apply bg-secondary text-sm px-[10px] py-[4px]  text-TxtPrimary-700 rounded-md border border-gray-300 outline-none font-medium;
 }
+
 .btn-sidebar {
   @apply flex items-center justify-start w-full gap-3 p-2 px-3 transition-all rounded-md bg-secondary hover:bg-slate-100;
 }
+
 .sidebar {
   transition: width 0.3s ease-in-out;
   -webkit-transition: width 0.3s ease-in-out;
   -moz-transition: width 0.3s ease-in-out;
   -ms-transition: width 0.3s ease-in-out;
   -o-transition: width 0.3s ease-in-out;
+}
+.margin-transition {
+  transition: margin 0.3s ease-in-out;
+  -webkit-transition: margin 0.3s ease-in-out;
+  -moz-transition: margin 0.3s ease-in-out;
+  -ms-transition: margin 0.3s ease-in-out;
+  -o-transition: margin 0.3s ease-in-out;
 }
 
 .display-collapse {
@@ -26,4 +42,19 @@
   -moz-transition: height 0.3s ease-in-out;
   -ms-transition: height 0.3s ease-in-out;
   -o-transition: height 0.3s ease-in-out;
+}
+@keyframes scale {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.animation-scale {
+  animation-name: scale;
+  animation-duration: 0.3s; /* durasi animasi */
+  animation-timing-function: ease-in-out; /* kurva pergerakan animasi */
+  animation-fill-mode: forwards; /* elemen tetap berada pada akhir animasi */
 }
