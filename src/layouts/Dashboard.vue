@@ -2,7 +2,6 @@
 import { useStore } from 'vuex'
 import Sidebar from '../components/Sidebar.vue'
 const store = useStore()
-console.log(store.state.isSidebarOpen)
 </script>
 <template>
   <div>
@@ -13,7 +12,7 @@ console.log(store.state.isSidebarOpen)
     </nav> -->
     <Sidebar />
     <div
-      class="ml-[14.3rem] sidebar-collapse p-5"
+      class="ml-[14.3rem] sidebar-collapse p-5 margin-transition"
       :style="{ marginLeft: store.state.isSidebarOpen ? '14.3rem' : '4rem' }"
     >
       <router-view />
