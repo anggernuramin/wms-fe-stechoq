@@ -1,8 +1,8 @@
 import axios from 'axios'
 
-export const getAllCategory = async () => {
+export const getAllProduct = async () => {
   try {
-    const res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/category`, {
+    const res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/produk`, {
       headers: {
         'Cache-Control': 'no-cache' // Mengatur header Cache-Control untuk memastikan data selalu diambil dari server
       }
@@ -13,10 +13,10 @@ export const getAllCategory = async () => {
   }
 }
 
-export const pagedCategory = async (id, limit, teks) => {
+export const pagedProduct = async (id, limit, teks) => {
   try {
     const res = await axios.get(
-      `${import.meta.env.VITE_VUE_APP_BASE_URL}/searchCategory?search_query=${teks}&page=${id.value - 1}&limit=${limit}`,
+      `${import.meta.env.VITE_VUE_APP_BASE_URL}/searchProduk?search_query=${teks}&page=${id.value - 1}&limit=${limit}`,
       {
         headers: {
           'Cache-Control': 'no-cache' // Mengatur header Cache-Control untuk memastikan data selalu diambil dari server
@@ -29,20 +29,20 @@ export const pagedCategory = async (id, limit, teks) => {
   }
 }
 
-export const getCategoryById = async (id) => {
+export const getProductById = async (id) => {
   try {
-    const res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/category/${id}`)
-    console.log('🚀 ~ getCategoryById ~ res:', res.datadata)
+    const res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/produk/${id}`)
+    console.log('🚀 ~ getProductById ~ res:', res.datadata)
     return res.data.data
   } catch (error) {
     return error.message
   }
 }
 
-export const deleteCategory = async (id) => {
+export const deleteProduct = async (id) => {
   try {
-    const res = await axios.delete(`${import.meta.env.VITE_VUE_APP_BASE_URL}/category/${id}`)
-    console.log('🚀 ~ deleteCategory ~ res:', res)
+    const res = await axios.delete(`${import.meta.env.VITE_VUE_APP_BASE_URL}/produk/${id}`)
+    console.log('🚀 ~ deleteProduct ~ res:', res)
     return res.data.statusCode
   } catch (error) {
     return error.message

@@ -1,19 +1,27 @@
 <script setup>
 import { reactive, ref, onMounted, onBeforeUnmount } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers, minLength } from '@vuelidate/validators'
+import { getAllCategory } from '../../services/category.services'
+import axios from 'axios'
 
 const state = reactive({
   product: '',
   category: '',
   price: ''
 })
+
+const emits = defineEmits(['dataAdded'])
+const router = useRouter()
 const listProducts = ref([])
 const displayAddButton = ref(false)
 const listCategory = ref([])
 const valueCategory = ref('')
 const displayAddButtonCategory = ref(false)
 
+const isLoading = ref(false)
+const isSubmit = ref(false)
 const ERROR = 'error'
 
 const rules = {
@@ -60,39 +68,41 @@ const product = [
     name: 'IPHONE 11 64GB'
   }
 ]
-const category = [
-  {
-    id: 1,
-    name: 'Vivo'
-  },
-  {
-    id: 2,
-    name: 'Oppo'
-  },
-  {
-    id: 1,
-    name: 'Samsung'
-  },
-  {
-    id: 1,
-    name: 'Iphone'
-  },
-  {
-    id: 1,
-    name: 'Nokia'
-  }
-]
+const category = []
+
+const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1)
+}
 
 const submitAddProduct = async () => {
+  if (isLoading.value || isSubmit.value) return // menghentikan mengirim form lebih dari 1 kali
   const result = await v$.value.$validate()
   // Check apakah ada error
   if (result) {
-    alert('success form ')
-  } else {
-    console.log('Error submit form', result)
+    try {
+      isLoading.value = true
+      const res = await axios.post(
+        `${import.meta.env.VITE_VUE_APP_BASE_URL}/produk`,
+        {
+          Nama: capitalizeFirstLetter(state.product),
+          Kategori: state.category.toUpperCase(),
+          Harga_Jual: state.price
+        },
+        {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      )
+      isSubmit.value = true
+      emits('dataAdded')
+      router.push('/products')
+      isLoading.value = false
+    } catch (error) {
+      alert(error.message)
+      isLoading.value = false
+      isSubmit.value = false
+    }
   }
 }
-
 const setNameProducts = () => {
   if (!state.product) {
     return (listProducts.value = product.slice(0, 5))
@@ -271,8 +281,15 @@ const selectCategory = (name) => {
           <span class="text-xs text-slate-400">Kolom tanda * input wajib diisi</span>
           <div class="flex items-center justify-between gap-3">
             <router-link to="/products" class="btn-md-error">Batal</router-link>
-
-            <button type="submit" class="btn-md-success">Simpan</button>
+            <button
+              type="submit"
+              :disabled="isLoading"
+              class="btn-md-success"
+              :class="{ 'cursor-not-allowed opacity-50': state.loading }"
+            >
+              <span v-if="isLoading">Loading . . .</span>
+              <span v-else>Simpan</span>
+            </button>
           </div>
         </div>
       </form>

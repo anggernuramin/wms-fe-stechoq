@@ -1,29 +1,52 @@
 <script setup>
 import { useRoute } from 'vue-router'
-import { onMounted, watchEffect, ref, defineEmits } from 'vue'
+import { onMounted, ref } from 'vue'
 import Breadcrums from '../../components/Breadcrums.vue'
-import { getAllCategory } from '../../services/category.services'
+import { getAllCategory, pagedCategory } from '../../services/category.services'
 
 const location = useRoute()
 const data = ref([])
 const errorMessage = ref('')
 const isLoading = ref(false)
-const path = ref('')
+const currentPage = ref(1)
+const totalPages = ref(10)
+const search = ref('')
 
 const fetchData = async () => {
   try {
     isLoading.value = true
-    const categories = await getAllCategory()
+    const response = await pagedCategory(currentPage, 10, search.value)
     isLoading.value = false
-    data.value = categories
+    data.value = response
   } catch (error) {
     isLoading.value = false
     console.log(error.message)
   }
 }
+
+const previousPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value -= 1
+    fetchData()
+  }
+}
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value += 1
+    fetchData()
+  }
+}
+
 onMounted(() => {
   fetchData()
 })
+
+const updateSearch = (event) => {
+  search.value = event.target.value
+  console.log('MASUK PAK EKO')
+  fetchData()
+}
 </script>
 
 <template>
@@ -55,9 +78,15 @@ onMounted(() => {
       <div class="flex items-center justify-between px-5 pb-4">
         <h1 class="text-lg font-semibold text-TxtPrimary-700">Category</h1>
         <div class="flex items-center gap-5">
-          <form action="" class="outline-none">
+          <form class="outline-none" @submit.prevent="">
             <label class="py-[6px] px-2 flex items-center rounded-md border text-slate-600 gap-2 bg-secondary">
-              <input type="search" class="border-0 outline-none text-slate-600 bg-secondary" placeholder="Search" />
+              <input
+                v-model="search"
+                type="text"
+                class="border-0 outline-none text-slate-600 bg-secondary"
+                placeholder="Search"
+                @input="updateSearch"
+              />
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 16 16"
@@ -82,7 +111,7 @@ onMounted(() => {
             <th class="font-medium">#</th>
             <th class="font-medium">Id. Category</th>
             <th class="font-medium">Nama Category</th>
-            <th class="font-medium">Qty</th>
+            <!-- <th class="font-medium"><p>Nilai search: {{ searchTerm }}</p></th> -->
             <th class="font-medium">Action</th>
           </tr>
         </thead>
@@ -90,14 +119,14 @@ onMounted(() => {
           <template v-if="data.length">
             <tr v-for="(item, index) in data" :key="index" class="font-normal border-b-slate-100">
               <td>{{ index + 1 }}</td>
-              <td>{{ item.id }}</td>
+              <td>{{ item.id_kategori }}</td>
               <td>{{ item.Nama }}</td>
-              <td>{{ item.Qty }}</td>
+              <!-- <td><p>Nilai search: {{ searchTerm }}</p></td> -->
               <td class="flex gap-3">
-                <router-link :to="'/products/category/edit/' + item?.id">
+                <router-link :to="'/products/category/edit/' + item?.id_kategori">
                   <i class="text-[14px] text-warning fa fa-pencil" aria-hidden="true"></i>
                 </router-link>
-                <router-link :to="'/products/category/delete/' + item?.id">
+                <router-link :to="'/products/category/delete/' + item?.id_kategori">
                   <i class="text-[14px] text-error fa fa-trash" aria-hidden="true"></i>
                 </router-link>
               </td>
@@ -109,9 +138,11 @@ onMounted(() => {
         {{ errorMessage }}
       </template>
       <div class="flex items-center justify-end gap-5 py-5 mt-3 border-t pe-16 text-TxtPrimary-700">
-        <button class="btn-sm-default">Previous</button>
-        <span>Page <b>1</b> of <b>10</b></span>
-        <button class="btn-sm-default">Next</button>
+        <button class="btn-sm-default" :disabled="currentPage === 1" @click="previousPage">Previous</button>
+        <span
+          >Page <b>{{ currentPage }}</b> of <b>{{ totalPages }}</b></span
+        >
+        <button class="btn-sm-default" :disabled="currentPage === totalPages" @click="nextPage">Next</button>
       </div>
     </section>
   </div>

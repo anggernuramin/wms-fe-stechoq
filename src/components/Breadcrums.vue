@@ -1,5 +1,6 @@
 import { required } from '@vuelidate/validators';
 <script setup>
+import { required } from '@vuelidate/validators'
 const props = defineProps({
   path: {
     type: Array,

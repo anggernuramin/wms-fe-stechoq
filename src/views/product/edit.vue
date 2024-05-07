@@ -1,19 +1,29 @@
 <script setup>
-import { reactive, ref, onMounted, onBeforeUnmount } from 'vue'
+import { reactive, ref, onMounted, defineEmits, onBeforeUnmount } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useVuelidate } from '@vuelidate/core'
+import axios from 'axios'
 import { required, helpers, minLength } from '@vuelidate/validators'
+import { getProductById } from '../../services/Product.services'
 
 const state = reactive({
   product: '',
   category: '',
   price: ''
 })
+
+const emits = defineEmits(['dataAdded'])
+const router = useRouter()
 const listProducts = ref([])
 const displayAddButton = ref(false)
 const listCategory = ref([])
 const valueCategory = ref('')
 const displayAddButtonCategory = ref(false)
+const route = useRoute()
+const productId = route.params.id
 
+const isLoading = ref(false)
+const isSubmit = ref(false)
 const ERROR = 'error'
 
 const rules = {
@@ -23,11 +33,16 @@ const rules = {
 }
 
 const v$ = useVuelidate(rules, state)
-onMounted(() => {
+onMounted(async () => {
   document.addEventListener('click', handleClickOutside)
-  state.product = 'SAM A057 A05S 6/128'
-  state.category = 'Samsung'
-  state.price = 2000000
+  try {
+    const response = await getProductById(productId)
+    state.product = response?.Nama
+    state.category = response?.Kategori
+    state.price = response?.Harga_Jual
+  } catch (error) {
+    console.log(error.message)
+  }
 })
 
 const handleClickOutside = (event) => {
@@ -63,36 +78,46 @@ const product = [
     name: 'IPHONE 11 64GB'
   }
 ]
+
 const category = [
   {
     id: 1,
-    name: 'Vivo'
-  },
-  {
-    id: 2,
-    name: 'Oppo'
-  },
-  {
-    id: 1,
-    name: 'Samsung'
-  },
-  {
-    id: 1,
-    name: 'Iphone'
-  },
-  {
-    id: 1,
-    name: 'Nokia'
+    name: 'VIVO Y02 3/32'
   }
 ]
 
-const submitAddProduct = async () => {
+const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1)
+}
+
+const submitEditProduct = async () => {
+  if (isLoading.value || isSubmit.value) return
   const result = await v$.value.$validate()
   // Check apakah ada error
   if (result) {
-    alert('success form ')
-  } else {
-    console.log('Error submit form', result)
+    try {
+      isLoading.value = true
+
+      const res = await axios.patch(
+        `${import.meta.env.VITE_VUE_APP_BASE_URL}/produk/${productId}`,
+        {
+          Nama: capitalizeFirstLetter(state.product),
+          Kategori: state.category.toUpperCase(),
+          Harga_Jual: state.price
+        },
+        {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      )
+      isSubmit.value = true
+      emits('dataAdded')
+      router.push('/products')
+      isLoading.value = false
+    } catch (error) {
+      alert(error.message)
+      isLoading.value = false
+      isSubmit.value = false
+    }
   }
 }
 
@@ -159,7 +184,7 @@ const selectCategory = (name) => {
     class="absolute top-0 bottom-0 left-0 right-0 z-50 flex items-center justify-center overflow-auto bg-opacity-55 bg-TxtPrimary-700"
   >
     <div class="w-1/2 rounded-md bg-secondary animation-scale">
-      <form class="p-5" @submit.prevent="submitAddProduct">
+      <form class="p-5" @submit.prevent="submitEditProduct">
         <h2 class="mb-4 text-2xl font-normal text-left text-slate-900">Edit Data Product</h2>
         <div class="grid grid-cols-1 gap-4">
           <div class="relative flex flex-col gap-2">
@@ -274,8 +299,15 @@ const selectCategory = (name) => {
           <span class="text-xs text-slate-400">Kolom tanda * input wajib diisi</span>
           <div class="flex items-center justify-between gap-3">
             <router-link to="/products" class="btn-md-error">Batal</router-link>
-
-            <button type="submit" class="btn-md-success">Simpan</button>
+            <button
+              type="submit"
+              :disabled="isLoading"
+              class="btn-md-success"
+              :class="{ 'cursor-not-allowed opacity-50': state.loading }"
+            >
+              <span v-if="isLoading">Loading . . .</span>
+              <span v-else>Simpan</span>
+            </button>
           </div>
         </div>
       </form>

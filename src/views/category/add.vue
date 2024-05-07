@@ -34,7 +34,7 @@ const submitAddProduct = async () => {
       const res = await axios.post(
         `${import.meta.env.VITE_VUE_APP_BASE_URL}/category`,
         {
-          Nama: state.name
+          Nama: state.name.toUpperCase()
         },
         {
           headers: { 'Content-Type': 'application/json' }

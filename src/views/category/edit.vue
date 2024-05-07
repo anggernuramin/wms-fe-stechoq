@@ -45,10 +45,11 @@ const submitEditProduct = async () => {
     try {
       isLoading.value = true
 
-      const res = await axios.post(
-        `${import.meta.env.VITE_VUE_APP_BASE_URL}/category`,
+      const res = await axios.patch(
+        `${import.meta.env.VITE_VUE_APP_BASE_URL}/category/${id.value}`,
         {
-          Nama: state.name
+          id: id.value,
+          Nama: state.name.toUpperCase()
         },
         {
           headers: { 'Content-Type': 'application/json' }

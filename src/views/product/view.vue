@@ -1,16 +1,60 @@
 <script setup>
 import { useRoute } from 'vue-router'
+import { onMounted, ref } from 'vue'
+import Breadcrums from '../../components/Breadcrums.vue'
+import { getAllProduct, pagedProduct } from '../../services/Product.services'
 
 const location = useRoute()
+const data = ref([])
+const errorMessage = ref('')
+const isLoading = ref(false)
+const currentPage = ref(1)
+const totalPages = ref(10)
+const search = ref('')
+
+const fetchData = async () => {
+  try {
+    isLoading.value = true
+    const response = await pagedProduct(currentPage, 10, search.value)
+    isLoading.value = false
+    data.value = response
+  } catch (error) {
+    isLoading.value = false
+    console.log(error.message)
+  }
+}
+
+const previousPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value -= 1
+    fetchData()
+  }
+}
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value += 1
+    fetchData()
+  }
+}
+
+onMounted(() => {
+  fetchData()
+})
+
+const updateSearch = (event) => {
+  search.value = event.target.value
+  console.log('MASUK PAK EKO')
+  fetchData()
+}
 </script>
 
 <template>
   <div class="overflow-x-auto">
     <section class="rounded-md shadow-md bg-secondary">
       <header class="flex items-center justify-between w-full px-5 pt-3 overflow-hidden rounded-md">
-        <h1 class="font-medium text-md text-slate-700">
-          <router-link to="/" class="text-slate-400">Dashboard</router-link> / {{ location?.name }}
-        </h1>
+        <Breadcrums :path="[{ name: 'Dashboard', url: '/' }]" :pathActive="{ name: 'Product', url: location?.name }" />
+
         <div class="flex gap-3">
           <button class="flex items-center justify-center gap-2 btn-sm-default">
             <i class="fas fa-filter"></i>Export
@@ -25,9 +69,15 @@ const location = useRoute()
       <div class="flex items-center justify-between px-5 pb-4">
         <h1 class="text-lg font-semibold text-TxtPrimary-700">Product</h1>
         <div class="flex items-center gap-5">
-          <form action="" class="outline-none">
+          <form class="outline-none" @submit.prevent="">
             <label class="py-[6px] px-2 flex items-center rounded-md border text-slate-600 gap-2 bg-secondary">
-              <input type="search" class="border-0 outline-none text-slate-600 bg-secondary" placeholder="Search" />
+              <input
+                v-model="search"
+                type="text"
+                class="border-0 outline-none text-slate-600 bg-secondary"
+                placeholder="Search"
+                @input="updateSearch"
+              />
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 16 16"
@@ -42,35 +92,9 @@ const location = useRoute()
               </svg>
             </label>
           </form>
-          <div class="border rounded-md dropdown dropdown-end">
-            <div
-              tabindex="0"
-              role="button"
-              class="py-[4px] m-1 bg-secondary flex justify-center items-center gap-5 text-sm px-5"
-            >
-              Semua Kategori <i class="text-xs fas fa-chevron-down"></i>
-            </div>
-            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-primary rounded-box w-52">
-              <li><a>Oppo</a></li>
-              <li><a>Vivo</a></li>
-            </ul>
-          </div>
-          <div class="border rounded-md dropdown dropdown-end">
-            <div
-              tabindex="0"
-              role="button"
-              class="py-[4px] m-1 bg-secondary flex justify-center items-center gap-5 text-sm px-5"
-            >
-              Lokasi <i class="text-xs fas fa-chevron-down"></i>
-            </div>
-            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-primary rounded-box w-52">
-              <li><a>Oppo</a></li>
-              <li><a>Vivo</a></li>
-            </ul>
-          </div>
         </div>
       </div>
-
+      <template v-if="isLoading"> <h1>Loading . . .</h1></template>
       <table class="table rounded-sm">
         <!-- head -->
         <thead class="bg-zinc-50">
@@ -80,31 +104,40 @@ const location = useRoute()
             <th class="font-medium">Product</th>
             <th class="font-medium">Category</th>
             <th class="font-medium">Price</th>
+            <th class="font-medium">QTY</th>
             <th class="font-medium">Action</th>
           </tr>
         </thead>
-        <tbody class="text-xs font-light text-TxtPrimary-700">
-          <tr class="font-normal border-b-slate-100">
-            <td>4</td>
-            <td>004</td>
-            <td>IPHONE 11 64GB</td>
-            <td>IPHONE</td>
-            <td>1.200.000</td>
-            <td class="flex gap-3">
-              <router-link to="/products/edit/1" class="cursor-pointer">
-                <i class="text-[14px] text-warning fa fa-pencil" aria-hidden="true"></i>
-              </router-link>
-              <router-link to="/products/delete/1" class="cursor-pointer">
-                <i class="text-[14px] text-error fa fa-trash" aria-hidden="true"></i>
-              </router-link>
-            </td>
-          </tr>
+        <tbody class="justify-between text-sm font-light text-slate-500">
+          <template v-if="data.length">
+            <tr v-for="(item, index) in data" :key="index" class="font-normal border-b-slate-100">
+              <td>{{ index + 1 }}</td>
+              <td>{{ item.id_produk }}</td>
+              <td>{{ item.Nama }}</td>
+              <td>{{ item.Kategori }}</td>
+              <td>{{ item.Harga_Jual }}</td>
+              <td>{{ item.Quantity }}</td>
+              <td class="flex gap-3">
+                <router-link :to="'/products/edit/' + item?.id_produk">
+                  <i class="text-[14px] text-warning fa fa-pencil" aria-hidden="true"></i>
+                </router-link>
+                <router-link :to="'/products/delete/' + item?.id_produk">
+                  <i class="text-[14px] text-error fa fa-trash" aria-hidden="true"></i>
+                </router-link>
+              </td>
+            </tr>
+          </template>
         </tbody>
       </table>
+      <template v-if="errorMessage">
+        {{ errorMessage }}
+      </template>
       <div class="flex items-center justify-end gap-5 py-5 mt-3 border-t pe-16 text-TxtPrimary-700">
-        <button class="btn-sm-default">Previous</button>
-        <span>Page <b>1</b> of <b>10</b></span>
-        <button class="btn-sm-default">Next</button>
+        <button class="btn-sm-default" :disabled="currentPage === 1" @click="previousPage">Previous</button>
+        <span
+          >Page <b>{{ currentPage }}</b> of <b>{{ totalPages }}</b></span
+        >
+        <button class="btn-sm-default" :disabled="currentPage === totalPages" @click="nextPage">Next</button>
       </div>
     </section>
   </div>
@@ -121,5 +154,5 @@ const location = useRoute()
       </div>
     </div>
   </dialog> -->
-  <router-view></router-view>
+  <router-view @dataAdded="fetchData"></router-view>
 </template>
