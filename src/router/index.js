@@ -75,8 +75,20 @@ const router = createRouter({
         },
         {
           path: 'barang-masuk',
-          name: 'Barang Masuk',
-          component: () => import('../views/BarangMasuk.vue')
+          name: 'barangmasuk',
+          component: () => import('../views/barangMasuk/view.vue'),
+          children: [
+            {
+              path: 'add',
+              name: 'barang tambah',
+              component: () => import('../views/barangMasuk/add.vue')
+            },
+            {
+              path: 'detail/:id',
+              name: 'barang masuk detail',
+              component: () => import('../views/barangMasuk/detail.vue')
+            }
+          ]
         }
       ]
     },

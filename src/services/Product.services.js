@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { capitalizeFirstLetter } from '../libs/capitalizeFirstLetter'
 
 export const getAllProduct = async () => {
   try {
@@ -44,6 +45,23 @@ export const deleteProduct = async (id) => {
     const res = await axios.delete(`${import.meta.env.VITE_VUE_APP_BASE_URL}/produk/${id}`)
     console.log('🚀 ~ deleteProduct ~ res:', res)
     return res.data.statusCode
+  } catch (error) {
+    return error.message
+  }
+}
+
+export const addNameProduct = async (name) => {
+  try {
+    const res = await axios.post(
+      `${import.meta.env.VITE_VUE_APP_BASE_URL}/seriProduk`,
+      {
+        seri: capitalizeFirstLetter(name)
+      },
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    )
+    return res
   } catch (error) {
     return error.message
   }

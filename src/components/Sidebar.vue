@@ -156,7 +156,7 @@ const openOptionProduct = () => {
             'bg-secondary text-TxtPrimary-700': location.path !== '/barang-masuk'
           }"
         >
-          <i class="text-md fas fa-briefcase"></i>
+          <i class="text-md fa-solid fa-list-check"></i>
           <h2 class="text-sm" :class="{ hidden: !store.state.isSidebarOpen }">Barang Masuk</h2>
         </router-link>
       </li>

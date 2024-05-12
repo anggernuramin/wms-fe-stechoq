@@ -11,7 +11,9 @@ import { capitalizeFirstLetter } from '../../libs/capitalizeFirstLetter.js'
 const state = reactive({
   product: '',
   category: '',
-  price: ''
+  keterangan: '',
+  customer: '',
+  tanggal: ''
 })
 
 let product = []
@@ -25,8 +27,6 @@ const emits = defineEmits(['dataAdded'])
 const router = useRouter()
 const listProducts = ref([])
 const displayAddButton = ref(false)
-const listCategory = ref([])
-const valueCategory = ref('')
 const displayAddButtonCategory = ref(false)
 
 const isLoading = ref(false)
@@ -35,8 +35,10 @@ const ERROR = 'error'
 
 const rules = {
   product: { required: { ...required, message: ERROR } },
-  category: { required }, // Matches state.category
-  price: { required, minLength: minLength(6) } // Matches state.price
+  price: { required, minLength: minLength(6) }, // Matches state.price
+  customer: { required }, // Matches state.category
+  keterangan: { required }, // Matches state.category
+  tanggal: { required } // Matches state.category
 }
 
 const handleAddNameProduct = async (name) => {
@@ -51,12 +53,8 @@ onMounted(() => {
 
 const handleClickOutside = (event) => {
   const wrapper = document.querySelector('.wrapper-product')
-  const wrapperCategory = document.querySelector('.wrapper-category')
   if (!wrapper.contains(event.target)) {
     listProducts.value = []
-  }
-  if (!wrapperCategory.contains(event.target)) {
-    listCategory.value = []
   }
 }
 
@@ -125,45 +123,15 @@ const selectProduct = (name) => {
   state.product = name
   listProducts.value = []
 }
-
-const setNameCategory = async () => {
-  if (!state.category) {
-    const category = await getAllCategory()
-    return (listCategory.value = category.slice(0, 3))
-  }
-}
-const searchNameCategory = (e) => {
-  const searchTerm = e.trim()
-  if (!searchTerm) {
-    displayAddButtonCategory.value = false
-    listCategory.value = category
-    return
-  }
-  const search = category.filter((item) => {
-    return item?.name.toUpperCase().includes(e.toUpperCase())
-  })
-  if (search.length > 0) {
-    displayAddButtonCategory.value = false
-    listCategory.value = search
-  } else {
-    listCategory.value = []
-    displayAddButtonCategory.value = true
-  }
-}
-const selectCategory = (name) => {
-  state.category = name
-  listCategory.value = []
-}
 </script>
 
 <template>
-  <!-- Put this part before </body> tag -->
   <section
     class="absolute top-0 bottom-0 left-0 right-0 z-50 flex items-center justify-center overflow-auto bg-opacity-55 bg-TxtPrimary-700"
   >
     <div class="w-1/2 rounded-md bg-secondary animation-scale">
       <form class="p-5" @submit.prevent="submitAddProduct">
-        <h2 class="mb-4 text-2xl font-normal text-left text-slate-900">Tambah Data Product</h2>
+        <h2 class="mb-4 text-2xl font-normal text-left text-slate-900">Tambah Data Barang Masuk</h2>
         <div class="grid grid-cols-1 gap-4">
           <div class="relative flex flex-col gap-2">
             <label for="product" class="text-sm font-normal text-TxtPrimary-700"
@@ -209,42 +177,21 @@ const selectCategory = (name) => {
             </span>
           </div>
 
-          <div class="relative flex flex-col gap-2 wrapper-product">
-            <label for="product" class="text-sm font-normal text-TxtPrimary-700"
-              >Category<span class="text-lg text-red-700 ps-2">*</span></label
+          <div class="relative flex flex-col gap-2">
+            <label for="price" class="text-sm font-normal text-TxtPrimary-700"
+              >Custumer<span class="text-lg text-red-700 ps-2">*</span></label
             >
             <input
-              v-model="state.category"
+              id="price"
+              v-model="state.customer"
               type="text"
-              placeholder="Input Category"
-              class="w-full px-3 py-2 text-sm border bg-secondary wrapper-category"
-              @input="(e) => searchNameCategory(e.target.value)"
-              @focus="setNameCategory"
+              placeholder="00000000"
+              class="w-full px-3 py-[6px] border rounded-md bg-secondary outline-none"
+              name="price"
             />
-            <ul id="product" class="absolute left-0 right-0 z-50 w-full text-xs bg-white shadow-md top-20">
-              <li
-                v-for="item in listCategory"
-                :key="item.id_kategori"
-                :value="item.Nama"
-                class="px-2 py-2 text-xs border-b cursor-pointer text-slate-800 hover:bg-slate-200"
-                @click.prevent="() => selectCategory(item.Nama)"
-              >
-                {{ item.Nama }}
-              </li>
-            </ul>
+
             <span
-              v-if="displayAddButtonCategory"
-              class="absolute left-0 right-0 z-50 w-full text-xs text-red-700 bg-white top-20"
-            >
-              <button
-                class="flex items-center justify-center w-full gap-3 py-1 text-sm font-medium btn-md-success text-secondary"
-              >
-                <i class="fa-solid fa-plus"></i>
-                Add
-              </button>
-            </span>
-            <span
-              v-for="error in v$.category.$errors"
+              v-for="error in v$.customer.$errors"
               :key="error.$uid"
               class="absolute left-1 right-0 z-10 w-full text-xs text-red-800 bg-white top-[76px]"
             >
@@ -254,19 +201,44 @@ const selectCategory = (name) => {
 
           <div class="relative flex flex-col gap-2">
             <label for="price" class="text-sm font-normal text-TxtPrimary-700"
-              >Price<span class="text-lg text-red-700 ps-2">*</span></label
+              >Keterangan<span class="text-lg text-red-700 ps-2">*</span></label
             >
-            <input
+            <textarea
               id="price"
-              v-model="state.price"
-              type="number"
-              placeholder="00000000"
+              v-model="state.keterangan"
+              type="text"
               class="w-full px-3 py-[6px] border rounded-md bg-secondary outline-none"
               name="price"
-            />
+            >
+            </textarea>
 
             <span
-              v-for="error in v$.price.$errors"
+              v-for="error in v$.keterangan.$errors"
+              :key="error.$uid"
+              class="absolute left-1 right-0 z-10 w-full text-xs text-red-800 bg-white top-[76px]"
+            >
+              {{ error.$message }}
+            </span>
+          </div>
+
+          <div class="relative flex flex-col gap-2">
+            <label for="price" class="text-sm font-normal text-TxtPrimary-700"
+              >Tanggal<span class="text-lg text-red-700 ps-2">*</span></label
+            >
+
+            <div class="relative w-sm">
+              <input
+                id="tanggal"
+                v-model="state.tanggal"
+                type="text"
+                datepicker
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="Select date"
+              />
+            </div>
+
+            <span
+              v-for="error in v$.tanggal.$errors"
               :key="error.$uid"
               class="absolute left-1 right-0 z-10 w-full text-xs text-red-800 bg-white top-[76px]"
             >
@@ -277,7 +249,7 @@ const selectCategory = (name) => {
         <div class="flex items-center justify-between gap-3 mt-8">
           <span class="text-xs text-slate-400">Kolom tanda * input wajib diisi</span>
           <div class="flex items-center justify-between gap-3">
-            <router-link to="/products" class="btn-md-error">Batal</router-link>
+            <router-link to="/barang-masuk" class="btn-md-error">Batal</router-link>
             <button
               type="submit"
               :disabled="isLoading"
