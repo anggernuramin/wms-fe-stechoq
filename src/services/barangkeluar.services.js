@@ -15,7 +15,6 @@ export const GetBarangKeluar = async (teks, id) => {
     return error.message
   }
 }
-
 // export const GetBarangKeluarbyID = async (teks) => {
 //     try {
 //       const res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/barangKeluar?search=${teks}`, {
@@ -28,7 +27,6 @@ export const GetBarangKeluar = async (teks, id) => {
 //       return error.message
 //     }
 //   }
-
 export const DeleteBarangKeluar = async (id) => {
   try {
     const res = await axios.delete(`${import.meta.env.VITE_VUE_APP_BASE_URL}/barangKeluar/delete/${id}`)
