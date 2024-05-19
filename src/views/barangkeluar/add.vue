@@ -4,7 +4,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers, minLength } from '@vuelidate/validators'
 import { getAllCategory } from '../../services/category.services'
-import { getAllProduct, addNameProduct } from '../../services/Product.services.js'
+import { getAllProduct } from '../../services/Product.services.js'
 import axios from 'axios'
 import { capitalizeFirstLetter } from '../../libs/capitalizeFirstLetter.js'
 
@@ -23,7 +23,6 @@ onMounted(async () => {
 })
 
 const emits = defineEmits(['dataAdded'])
-const router = useRouter()
 const listProducts = ref([])
 const displayAddButton = ref(false)
 const listCategory = ref([])
@@ -41,12 +40,45 @@ const rules = {
   qty: { required } // Matches state.price
 }
 
-const handleAddNameProduct = async (name) => {
-  await addNameProduct(name)
-  selectProduct(name)
-}
+// const handleAddNameProduct = async (name) => {
+//   await addNameProduct(name)
+//   selectProduct(name)
+// }
 
 const v$ = useVuelidate(rules, state)
+const router = useRouter()
+const submitAddout = async () => {
+  if (isLoading.value || isSubmit.value) return // Stop form submission if already loading or submitted
+  const result = await v$.value.$validate()
+  // Check if there are validation errors
+  if (result) {
+    try {
+      isLoading.value = true
+      const res = await axios.post(
+        `${import.meta.env.VITE_VUE_APP_BASE_URL}/barangKeluar/createProduk`,
+        {
+          keterangan: state.keterangan,
+          nama_produk: state.product,
+          kategori: state.category,
+          quantity: state.qty
+        },
+        {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      )
+      console.log('POST request successful:', res)
+      isSubmit.value = true
+      emits('dataAdded')
+      router.push('/barangkeluar')
+      isLoading.value = false
+    } catch (error) {
+      alert(error.message)
+      isLoading.value = false
+      isSubmit.value = false
+    }
+  }
+}
+
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
 })
@@ -66,40 +98,6 @@ onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
 })
 
-const submitAddout = async () => {
-  if (isLoading.value || isSubmit.value) return // Stop form submission if already loading or submitted
-  const result = await v$.value.$validate()
-  // Check if there are validation errors
-  if (result) {
-    try {
-      isLoading.value = true
-      const res = await axios.post(
-        `${import.meta.env.VITE_VUE_APP_BASE_URL}/barangKeluar/createProduk`,
-        {
-          keterangan: state.keterangan,
-          nama_produk: state.product,
-          Kategori: state.category,
-          quantity: state.qty
-        },
-        {
-          headers: { 'Content-Type': 'application/json' }
-        }
-      )
-      console.log('POST request successful:', res)
-      isSubmit.value = true
-      emits('dataAdded')
-      router.push('/barangkeluar')
-    } catch (error) {
-      console.error('Error in POST request:', error.message)
-      alert(error.message)
-      isLoading.value = false
-      isSubmit.value = false
-    } finally {
-      isLoading.value = false
-    }
-  }
-}
-
 const setNameProducts = async () => {
   if (!state.product) {
     // const product = await getAllProduct()
@@ -108,6 +106,7 @@ const setNameProducts = async () => {
   }
 }
 
+//
 const searchNameProducts = async (e) => {
   const searchTerm = e.trim()
   if (!searchTerm) {
@@ -127,17 +126,21 @@ const searchNameProducts = async (e) => {
     displayAddButton.value = true
   }
 }
+
+//
 const selectProduct = (name) => {
   state.product = name
   listProducts.value = []
 }
 
+//
 const setNameCategory = async () => {
   if (!state.category) {
     const category = await getAllCategory()
     return (listCategory.value = category.slice(0, 3))
   }
 }
+//
 const searchNameCategory = (e) => {
   const searchTerm = e.trim()
   if (!searchTerm) {
@@ -156,6 +159,7 @@ const searchNameCategory = (e) => {
     displayAddButtonCategory.value = true
   }
 }
+//
 const selectCategory = (name) => {
   state.category = name
   listCategory.value = []
@@ -183,6 +187,9 @@ const selectCategory = (name) => {
               class="w-full px-3 py-[6px] border rounded-md bg-secondary outline-none"
               name="keterangan"
             />
+            <span v-for="error in v$.keterangan.$errors" :key="error.$uid" class="text-xs text-red-80">
+              {{ error.$message }}
+            </span>
           </div>
 
           <div class="relative flex flex-col gap-2">
@@ -261,6 +268,9 @@ const selectCategory = (name) => {
               class="w-full px-3 py-[6px] border rounded-md bg-secondary outline-none"
               name="qty"
             />
+            <span v-for="error in v$.qty.$errors" :key="error.$uid" class="text-xs text-red-80">
+              {{ error.$message }}
+            </span>
           </div>
         </div>
         <div class="flex items-center justify-between gap-3 mt-8">

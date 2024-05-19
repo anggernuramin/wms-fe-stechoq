@@ -46,3 +46,16 @@ export const UpdateBarangkeluar = async (id) => {
     return error.message
   }
 }
+
+export const submitAddout = async (data) => {
+  try {
+    const res = await axios.post(`${import.meta.env.VITE_VUE_APP_BASE_URL}/barangKeluar/createProduk`, data, {
+      headers: { 'Content-Type': 'application/json' }
+    })
+    console.log('POST request successful:', res)
+    return res.data
+  } catch (error) {
+    console.error('Error submitting data:', error)
+    throw new Error(error.message)
+  }
+}
