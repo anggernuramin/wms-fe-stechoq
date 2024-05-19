@@ -1,23 +1,24 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-import { getAllBarangMasuk } from '../../services/barang-masuk.service'
+import { getAllBarangMasuk, searchBarangMasuk } from '../../services/barang-masuk.service'
 import { formatDate } from '../../libs/formatDate.js'
-import { getAllCategory } from '../../services/category.services.js'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 const barangMasuk = ref([])
 const barangMasukSort = ref([])
-const category = ref([])
-const query = ref('')
 const isLoading = ref(false)
-const currentPage = ref(1)
-const router = useRouter()
+const currentPage = ref(0)
+const route = useRoute()
+const query = ref(route.query)
+
+onMounted(() => {
+  query.value = route.query
+})
 
 onMounted(async () => {
   try {
     isLoading.value = true
-    const res = await getAllBarangMasuk(currentPage.value)
-    category.value = await getAllCategory()
+    const res = await searchBarangMasuk(query.value)
     barangMasuk.value = res
     isLoading.value = false
   } catch (error) {
@@ -29,7 +30,7 @@ onMounted(async () => {
 const fetchData = async () => {
   try {
     isLoading.value = true
-    const res = await getAllBarangMasuk(currentPage.value)
+    const res = await searchBarangMasuk(query.value)
     barangMasuk.value = res
     isLoading.value = false
   } catch (error) {
@@ -43,9 +44,13 @@ onMounted(() => {
 })
 
 const handleSearchBarangMasuk = async (e) => {
-  const queries = query.value
   e.preventDefault()
-  router.push({ path: '/barang-masuk/search', query: { queries } })
+  try {
+    const data = await searchBarangMasuk(e.target.value)
+    return (barangMasuk.value = res)
+  } catch (error) {
+    return error.message
+  }
 }
 
 const sortingBarangMasuk = (name) => {
@@ -64,7 +69,9 @@ const sortingBarangMasuk = (name) => {
     <section class="rounded-md shadow-md bg-secondary">
       <header class="flex items-center justify-between w-full px-5 pt-3 overflow-hidden rounded-md">
         <h1 class="font-medium text-md text-slate-700">
-          <router-link to="/" class="text-slate-400">Dashboard</router-link> / Barang Masuk
+          <router-link to="/" class="text-slate-400">Dashboard</router-link> /
+          <router-link to="/barang-masuk" class="text-slate-400"> Barang Masuk</router-link>
+          / Search
         </h1>
         <div class="flex gap-3">
           <button class="flex items-center justify-center gap-2 btn-sm-default">
@@ -82,12 +89,7 @@ const sortingBarangMasuk = (name) => {
         <div class="flex items-center gap-5">
           <form action="" class="outline-none">
             <label class="py-[6px] px-2 flex items-center rounded-md border text-slate-600 gap-2 bg-secondary">
-              <input
-                v-model="query"
-                type="search"
-                class="border-0 outline-none text-slate-600 bg-secondary"
-                placeholder="Search"
-              />
+              <input type="search" class="border-0 outline-none text-slate-600 bg-secondary" placeholder="Search" />
               <button type="submit" @click="handleSearchBarangMasuk">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -113,7 +115,6 @@ const sortingBarangMasuk = (name) => {
             >
               Semua Kategori <i class="text-xs fas fa-chevron-down"></i>
             </div>
-
             <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-primary rounded-box w-52">
               <li v-for="(item, index) in category" :key="index">
                 <a @click="sortingBarangMasuk(item.Nama)">{{ item.Nama }}</a>
@@ -166,7 +167,7 @@ const sortingBarangMasuk = (name) => {
             </template>
             <template v-else>
               <tr>
-                <td colspan="8" class="text-center">Tidak ada data</td>
+                <td colspan="8" class="text-2xl text-center text-red-700">Tidak ada data</td>
               </tr>
             </template>
           </tbody>
@@ -179,7 +180,7 @@ const sortingBarangMasuk = (name) => {
           <button class="btn-sm-default">Next</button>
         </div>
       </template>
-      <template v-else>
+      <template v-else-if="barangMasuk.length > 0">
         <table class="table rounded-sm">
           <thead class="bg-zinc-50">
             <tr class="text-sm font-light text-slate-700 border-b-slate-100">
@@ -227,6 +228,9 @@ const sortingBarangMasuk = (name) => {
           >
           <button class="btn-sm-default">Next</button>
         </div>
+      </template>
+      <template v-else>
+        <h1 class="text-2xl text-center text-red-700">Data Not Found</h1>
       </template>
     </section>
   </div>

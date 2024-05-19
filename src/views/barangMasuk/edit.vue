@@ -1,7 +1,18 @@
 <script setup>
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref, onMounted, onBeforeUnmount, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useVuelidate } from '@vuelidate/core'
-import { getBarangMasukById } from '../../services/barang-masuk.service.js'
+import { required, helpers, minLength } from '@vuelidate/validators'
+import { getBarangMasukById, UpdateBarangMasuk } from '../../services/barang-masuk.service.js'
+import axios from 'axios'
+import { capitalizeFirstLetter } from '../../libs/capitalizeFirstLetter.js'
+import { useToast } from 'vue-toast-notification'
+import 'vue-toast-notification/dist/theme-sugar.css'
+
+const toast = useToast()
+const barangMasuk = ref({})
+const router = useRouter()
+const route = useRoute()
 
 const id = ref(route.params.id)
 
@@ -13,6 +24,11 @@ const state = reactive({
   tanggal: ''
 })
 
+const isLoading = ref(false)
+const isSubmit = ref(false)
+
+let product = []
+
 onMounted(async () => {
   const products = await getBarangMasukById(id.value)
   state.Nama_Produk = products.Nama_Produk
@@ -21,6 +37,51 @@ onMounted(async () => {
   state.quantity = products.Quantity_Masuk
   state.tanggal = products.tanggal
 })
+
+const emits = defineEmits(['dataAdded'])
+
+const rules = {
+  keterangan: { required },
+  quantity: { required }
+}
+
+const v$ = useVuelidate(rules, state)
+
+const submitEditBarangMasuk = async () => {
+  if (isLoading.value || isSubmit.value) return // menghentikan mengirim form lebih dari 1 kali
+  const result = await v$.value.$validate()
+  // Check apakah ada error
+  if (result) {
+    try {
+      isLoading.value = true
+
+      const res = await axios.patch(
+        `${import.meta.env.VITE_VUE_APP_BASE_URL}/barangMasuk/update/${id.value}`,
+        {
+          keterangan: state.keterangan,
+          quantity: state.quantity
+        },
+        {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      )
+      console.log('🚀 ~ submitEditBarangMasuk ~ res:', res)
+      isSubmit.value = true
+      emits('dataAdded')
+      router.push('/barang-masuk')
+      toast.success('Data Berhasil DiUpdate', {
+        position: 'top-right'
+      })
+      isLoading.value = false
+    } catch (error) {
+      toast.error('Data Gagal DiUpdate', {
+        position: 'top-right'
+      })
+      isLoading.value = false
+      isSubmit.value = false
+    }
+  }
+}
 </script>
 
 <template>
@@ -79,12 +140,19 @@ onMounted(async () => {
             <textarea
               id="price"
               v-model="state.keterangan"
-              disabled
               type="text"
               class="w-full px-3 py-[6px] border rounded-md bg-secondary outline-none"
               name="price"
             >
             </textarea>
+
+            <span
+              v-for="error in v$.keterangan.$errors"
+              :key="error.$uid"
+              class="absolute left-1 right-0 z-10 w-full text-xs text-red-800 bg-white top-[102px]"
+            >
+              {{ error.$message }}
+            </span>
           </div>
 
           <div class="relative flex flex-col gap-2">
@@ -94,17 +162,33 @@ onMounted(async () => {
             <input
               id="quantity"
               v-model="state.quantity"
-              disabled
               type="number"
               class="w-full px-3 py-[6px] border rounded-md bg-secondary outline-none"
               name="quantity"
             />
+
+            <span
+              v-for="error in v$.quantity.$errors"
+              :key="error.$uid"
+              class="absolute left-1 right-0 z-10 w-full text-xs text-red-800 bg-white top-[76px]"
+            >
+              {{ error.$message }}
+            </span>
           </div>
         </div>
         <div class="flex items-center justify-between gap-3 mt-8">
           <span class="text-xs text-slate-400">Kolom tanda * input wajib diisi</span>
           <div class="flex items-center justify-between gap-3">
-            <router-link to="/barang-masuk" class="btn-md-success">Keluar</router-link>
+            <router-link to="/barang-masuk" class="btn-md-error">Batal</router-link>
+            <button
+              type="submit"
+              :disabled="isLoading"
+              class="btn-md-success"
+              :class="{ 'cursor-not-allowed opacity-50': state.loading }"
+            >
+              <span v-if="isLoading">Loading . . .</span>
+              <span v-else>Simpan</span>
+            </button>
           </div>
         </div>
       </form>

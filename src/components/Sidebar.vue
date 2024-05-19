@@ -183,18 +183,7 @@ const openOptionProduct = () => {
           </h2>
         </router-link>
       </li>
-      <li class="w-full">
-        <router-link
-          to="/barang-masuk"
-          class="flex items-center justify-start w-full gap-3 p-2 px-3 rounded-md bg-secondary"
-        >
-          <i class="text-TxtPrimary-700 fas fa-briefcase"></i>
 
-          <h2 class="text-sm font-medium text-TxtPrimary-700" :class="{ hidden: !store.state.isSidebarOpen }">
-            Stock Barang
-          </h2>
-        </router-link>
-      </li>
       <h3 class="my-2 text-xs font-medium ps-3 text-TxtPrimary-700" :class="{ hidden: !store.state.isSidebarOpen }">
         Pengaturan
       </h3>

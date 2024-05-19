@@ -1,19 +1,65 @@
 import axios from 'axios'
 import { ref } from 'vue'
 
-export const getAllBarangMasuk = async () => {
-  let data = []
-  let error = ''
-  let loading = false
-  try {
-    loading = true
-    let res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/barangMasuk`)
-    loading = false
-    data = res?.data?.data
-  } catch (err) {
-    loading = false
-    error = err.message
+const headerConfig = {
+  headers: {
+    'Cache-Control': 'no-cache',
+    'Content-Type': 'application/json'
   }
+}
 
-  return { data, error, loading }
+export const getBarangMasukById = async (id) => {
+  try {
+    const res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/barangMasuk/${id}`, headerConfig)
+    return res.data.data
+  } catch (error) {
+    return error.message
+  }
+}
+
+export const getAllBarangMasuk = async (page) => {
+  try {
+    let res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/searchBM?page=${page}&limit=10 `)
+    return res.data?.result
+  } catch (err) {
+    return err.message
+  }
+}
+
+export const UpdateBarangMasuk = async (payload, id) => {
+  console.log('🚀 ~ UpdateBarangMasuk ~ payload:', JSON.stringify(payload))
+  try {
+    await axios.patch(`${import.meta.env.VITE_VUE_APP_BASE_URL}/barangMasuk/update/${id} `, JSON.stringify(payload), {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+  } catch (err) {
+    return err.message
+  }
+}
+
+export const deleteBarangMasuk = async (id) => {
+  try {
+    let res = await axios.delete(`${import.meta.env.VITE_VUE_APP_BASE_URL}/barangMasuk/delete/${id} `, {
+      headerConfig
+    })
+    return res
+  } catch (err) {
+    return err.message
+  }
+}
+
+export const searchBarangMasuk = async (query) => {
+  try {
+    let res = await axios.get(
+      `${import.meta.env.VITE_VUE_APP_BASE_URL}/searchBM?search_query=${query.queries}&page=0&limit=10`,
+      {
+        headerConfig
+      }
+    )
+    return res.data.result
+  } catch (err) {
+    return err.message
+  }
 }
