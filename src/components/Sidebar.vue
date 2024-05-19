@@ -163,13 +163,15 @@ const openOptionProduct = () => {
 
       <li class="w-full">
         <router-link
-          to="/barang-masuk"
-          class="flex items-center justify-start w-full gap-3 p-2 px-3 rounded-md bg-secondary"
+          to="/barangkeluar"
+          class="flex items-center justify-start w-full gap-3 p-2 px-3 font-medium rounded-md text-TxtPrimary-70"
+          :class="{
+            'bg-btnPrimary  text-slate-50': location.path === '/barangkeluar',
+            'bg-secondary text-TxtPrimary-700': location.path !== '/barangkeluar'
+          }"
         >
-          <i class="text-TxtPrimary-700 fas fa-briefcase"></i>
-          <h2 class="text-sm font-medium text-TxtPrimary-700" :class="{ hidden: !store.state.isSidebarOpen }">
-            Barang Keluar
-          </h2>
+          <i class="fas fa-truck text-md"></i>
+          <h2 class="text-sm" :class="{ hidden: !store.state.isSidebarOpen }">Barang Keluar</h2>
         </router-link>
       </li>
       <li class="w-full">

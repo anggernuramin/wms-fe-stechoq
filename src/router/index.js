@@ -6,7 +6,12 @@ const router = createRouter({
     {
       path: '/login',
       name: 'Login',
-      component: () => import('../views/LoginPage.vue')
+      component: () => import('../views/login/login.vue')
+    },
+    {
+      path: '/register',
+      name: 'Register',
+      component: () => import('../views/login/register.vue')
     },
     {
       path: '/',
@@ -59,19 +64,26 @@ const router = createRouter({
           ]
         },
         {
-          path: '/products/category/search',
-          name: 'category search',
-          component: () => import('../views/category/search.vue')
-        },
-        {
-          path: '',
-          name: 'Home',
-          component: () => import('../views/HomePage.vue')
-        },
-        {
-          path: 'profile',
-          name: 'Profile',
-          component: () => import('../views/ProfilePage.vue')
+          path: 'barangkeluar',
+          name: 'barangkeluar',
+          component: () => import('../views/barangkeluar/view.vue'),
+          children: [
+            {
+              path: 'add',
+              name: 'barangkeluar add',
+              component: () => import('../views/barangkeluar/add.vue')
+            },
+            {
+              path: 'edit/:id',
+              name: 'barangkeluar edit',
+              component: () => import('../views/barangkeluar/edit.vue')
+            },
+            {
+              path: 'delete/:id',
+              name: 'barangkeluar delete',
+              component: () => import('../views/barangkeluar/delete.vue')
+            }
+          ]
         },
         {
           path: 'barang-masuk',
@@ -105,6 +117,21 @@ const router = createRouter({
           path: 'barang-masuk/search',
           name: 'barang masuk search',
           component: () => import('../views/barangMasuk/search.vue')
+        },
+        {
+          path: '/products/category/search',
+          name: 'category search',
+          component: () => import('../views/category/search.vue')
+        },
+        {
+          path: '',
+          name: 'Home',
+          component: () => import('../views/HomePage.vue')
+        },
+        {
+          path: 'profile',
+          name: 'Profile',
+          component: () => import('../views/ProfilePage.vue')
         }
       ]
     },
