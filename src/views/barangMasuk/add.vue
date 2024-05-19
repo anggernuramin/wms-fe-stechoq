@@ -1,5 +1,6 @@
+<!-- eslint-disable vue/no-parsing-error -->
 <script setup>
-import { reactive, ref, onMounted, onBeforeUnmount } from 'vue'
+import { reactive, ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers, minLength } from '@vuelidate/validators'
@@ -7,14 +8,21 @@ import { getAllCategory } from '../../services/category.services'
 import { getAllProduct, addNameProduct } from '../../services/Product.services.js'
 import axios from 'axios'
 import { capitalizeFirstLetter } from '../../libs/capitalizeFirstLetter.js'
+import { useToast } from 'vue-toast-notification'
+import 'vue-toast-notification/dist/theme-sugar.css'
+
+const toast = useToast()
 
 const state = reactive({
   product: '',
   category: '',
   keterangan: '',
-  customer: '',
-  tanggal: ''
+  tanggal: '',
+  quantity: ''
 })
+
+const date = ref(new Date())
+const showDate = ref(false)
 
 let product = []
 
@@ -27,23 +35,29 @@ const emits = defineEmits(['dataAdded'])
 const router = useRouter()
 const listProducts = ref([])
 const displayAddButton = ref(false)
-const displayAddButtonCategory = ref(false)
 
+const statusMessageAdd = ref('Add +')
 const isLoading = ref(false)
 const isSubmit = ref(false)
 const ERROR = 'error'
 
 const rules = {
   product: { required: { ...required, message: ERROR } },
-  price: { required, minLength: minLength(6) }, // Matches state.price
-  customer: { required }, // Matches state.category
-  keterangan: { required }, // Matches state.category
-  tanggal: { required } // Matches state.category
+  keterangan: { required },
+  tanggal: { required },
+  quantity: { required },
+  category: { required }
 }
 
-const handleAddNameProduct = async (name) => {
+const handleAddNameProduct = async (name, kategori) => {
+  statusMessageAdd.value = 'Loading. . .'
   await addNameProduct(name)
-  selectProduct(name)
+    .then(() => (statusMessageAdd.value = 'Berhasil'))
+    .catch(() => (statusMessageAdd.value = 'Gagal'))
+  selectProduct(name, kategori)
+  setTimeout(() => {
+    displayAddButton.value = false
+  }, 1000)
 }
 
 const v$ = useVuelidate(rules, state)
@@ -62,7 +76,7 @@ onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
 })
 
-const submitAddProduct = async () => {
+const submitAddBarangMasuk = async () => {
   if (isLoading.value || isSubmit.value) return // menghentikan mengirim form lebih dari 1 kali
   const result = await v$.value.$validate()
   // Check apakah ada error
@@ -70,11 +84,13 @@ const submitAddProduct = async () => {
     try {
       isLoading.value = true
       const res = await axios.post(
-        `${import.meta.env.VITE_VUE_APP_BASE_URL}/produk`,
+        `${import.meta.env.VITE_VUE_APP_BASE_URL}/barangMasuk/create`,
         {
-          Nama: capitalizeFirstLetter(state.product),
-          Kategori: state.category.toUpperCase(),
-          Harga_Jual: state.price
+          nama_produk: state.product,
+          kategori: state.category,
+          keterangan: state.keterangan,
+          tanggal: state.tanggal,
+          quantity: state.quantity
         },
         {
           headers: { 'Content-Type': 'application/json' }
@@ -82,19 +98,23 @@ const submitAddProduct = async () => {
       )
       isSubmit.value = true
       emits('dataAdded')
-      router.push('/products')
+      router.push('/barang-masuk')
+      toast.success('Data Berhasil Ditambahkan', {
+        position: 'top-right'
+      })
       isLoading.value = false
     } catch (error) {
-      alert(error.message)
+      toast.error('Data Gagal Ditambahkan', {
+        position: 'top-right'
+      })
       isLoading.value = false
       isSubmit.value = false
     }
   }
 }
+
 const setNameProducts = async () => {
   if (!state.product) {
-    // const product = await getAllProduct()
-    // console.log('🚀 ~ setNameProducts ~ product:', product)
     return (listProducts.value = product)
   }
 }
@@ -119,18 +139,43 @@ const searchNameProducts = async (e) => {
     displayAddButton.value = true
   }
 }
-const selectProduct = (name) => {
+const selectProduct = (name, kategori) => {
+  state.category = kategori
   state.product = name
   listProducts.value = []
 }
+
+const handleDate = () => {
+  showDate.value = !showDate.value
+}
+
+const handleSetDate = () => {
+  console.log('🚀 ~ handleSetDate ~ value:', date.value)
+  if (date.value) {
+    return (state.tanggal = date.value.toISOString().split('T')[0]) // Convert to yyyy-mm-dd format
+  }
+}
+
+watch(date, (newDate) => {
+  return (state.tanggal = newDate.toISOString().split('T')[0]) // Convert to yyyy-mm-dd format
+})
+
+watch(displayAddButton, (displayCurrentButton) => {
+  // update pilihan data barang
+  const fetchProduct = async () => {
+    const products = await getAllProduct()
+    return (product = products)
+  }
+  fetchProduct()
+})
 </script>
 
 <template>
   <section
     class="absolute top-0 bottom-0 left-0 right-0 z-50 flex items-center justify-center overflow-auto bg-opacity-55 bg-TxtPrimary-700"
   >
-    <div class="w-1/2 rounded-md bg-secondary animation-scale">
-      <form class="p-5" @submit.prevent="submitAddProduct">
+    <div class="w-1/2 rounded-md bg-secondary animation-scale h-[65vh] overflow-y-scroll">
+      <form class="p-5" @submit.prevent="submitAddBarangMasuk">
         <h2 class="mb-4 text-2xl font-normal text-left text-slate-900">Tambah Data Barang Masuk</h2>
         <div class="grid grid-cols-1 gap-4">
           <div class="relative flex flex-col gap-2">
@@ -151,47 +196,14 @@ const selectProduct = (name) => {
                 :key="item?.id_produk"
                 :value="item.Nama"
                 class="px-2 py-2 text-xs border-b cursor-pointer text-slate-800 hover:bg-slate-200"
-                @click.prevent="() => selectProduct(item.Nama)"
+                @click.prevent="() => selectProduct(item.Nama, item?.Kategori)"
               >
                 {{ item.Nama }}
               </li>
             </ul>
-            <span
-              v-if="displayAddButton"
-              class="absolute left-0 right-0 z-50 w-full text-xs text-red-700 bg-white top-20"
-            >
-              <button
-                class="flex items-center justify-center w-full gap-3 py-1 text-sm font-medium btn-md-success text-secondary"
-                @click.prevent="() => handleAddNameProduct(state.product)"
-              >
-                Add
-                <i class="fa-solid fa-plus"></i>
-              </button>
-            </span>
+
             <span
               v-for="error in v$.product.$errors"
-              :key="error.$uid"
-              class="absolute left-1 right-0 z-10 w-full text-xs text-red-800 bg-white top-[76px]"
-            >
-              {{ error.$message }}
-            </span>
-          </div>
-
-          <div class="relative flex flex-col gap-2">
-            <label for="price" class="text-sm font-normal text-TxtPrimary-700"
-              >Custumer<span class="text-lg text-red-700 ps-2">*</span></label
-            >
-            <input
-              id="price"
-              v-model="state.customer"
-              type="text"
-              placeholder="00000000"
-              class="w-full px-3 py-[6px] border rounded-md bg-secondary outline-none"
-              name="price"
-            />
-
-            <span
-              v-for="error in v$.customer.$errors"
               :key="error.$uid"
               class="absolute left-1 right-0 z-10 w-full text-xs text-red-800 bg-white top-[76px]"
             >
@@ -204,6 +216,7 @@ const selectProduct = (name) => {
               >Keterangan<span class="text-lg text-red-700 ps-2">*</span></label
             >
             <textarea
+              placeholder="Keterangan Barang Masuk"
               id="price"
               v-model="state.keterangan"
               type="text"
@@ -215,7 +228,7 @@ const selectProduct = (name) => {
             <span
               v-for="error in v$.keterangan.$errors"
               :key="error.$uid"
-              class="absolute left-1 right-0 z-10 w-full text-xs text-red-800 bg-white top-[76px]"
+              class="absolute left-1 right-0 z-10 w-full text-xs text-red-800 bg-white top-[102px]"
             >
               {{ error.$message }}
             </span>
@@ -230,15 +243,40 @@ const selectProduct = (name) => {
               <input
                 id="tanggal"
                 v-model="state.tanggal"
-                type="text"
-                datepicker
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Select date"
+                type="date"
+                class="w-full px-3 py-[6px] border rounded-md bg-secondary outline-none"
+                name="tanggal"
+                @click="handleDate"
               />
+              <div v-if="showDate" class="absolute top-[-280px]">
+                <VDatePicker v-model="date" @click="handleSetDate" mode="date" />
+              </div>
             </div>
 
             <span
               v-for="error in v$.tanggal.$errors"
+              :key="error.$uid"
+              class="absolute left-1 right-0 z-10 w-full text-xs text-red-800 bg-white top-[76px]"
+            >
+              {{ error.$message }}
+            </span>
+          </div>
+
+          <div class="relative flex flex-col gap-2">
+            <label for="price" class="text-sm font-normal text-TxtPrimary-700"
+              >Quantity<span class="text-lg text-red-700 ps-2">*</span></label
+            >
+            <input
+              id="quantity"
+              placeholder="0"
+              v-model="state.quantity"
+              type="number"
+              class="w-full px-3 py-[6px] border rounded-md bg-secondary outline-none"
+              name="quantity"
+            />
+
+            <span
+              v-for="error in v$.quantity.$errors"
               :key="error.$uid"
               class="absolute left-1 right-0 z-10 w-full text-xs text-red-800 bg-white top-[76px]"
             >

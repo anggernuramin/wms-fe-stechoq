@@ -80,15 +80,31 @@ const router = createRouter({
           children: [
             {
               path: 'add',
-              name: 'barang tambah',
+              name: 'barang masuk tambah',
               component: () => import('../views/barangMasuk/add.vue')
             },
+
             {
               path: 'detail/:id',
               name: 'barang masuk detail',
               component: () => import('../views/barangMasuk/detail.vue')
+            },
+            {
+              path: 'edit/:id',
+              name: 'barang masuk edit',
+              component: () => import('../views/barangMasuk/edit.vue')
+            },
+            {
+              path: 'delete/:id',
+              name: 'barang masuk delete',
+              component: () => import('../views/barangMasuk/delete.vue')
             }
           ]
+        },
+        {
+          path: 'barang-masuk/search',
+          name: 'barang masuk search',
+          component: () => import('../views/barangMasuk/search.vue')
         }
       ]
     },
