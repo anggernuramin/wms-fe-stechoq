@@ -47,13 +47,18 @@ const openOptionProduct = () => {
       </div>
     </header>
     <ul class="flex flex-col items-start justify-start w-full h-screen gap-1 px-3 py-6 pt-24 overflow-y-auto">
-      <li class="w-full">
-        <router-link to="/" class="flex items-center justify-start w-full gap-3 p-2 px-3 rounded-md bg-secondary">
-          <i class="text-TxtPrimary-700 fas fa-briefcase"></i>
+      <li class="w-full mt-4">
+        <router-link
+          to="/"
+          class="flex items-center justify-start w-full gap-3 p-2 px-3 font-medium rounded-md"
+          :class="{
+            'bg-btnPrimary  text-slate-50': location.name.includes('Home'),
+            'bg-secondary text-TxtPrimary-700': !location.name.includes('Home')
+          }"
+        >
+          <i class="fas fa-briefcase"></i>
 
-          <h2 class="text-sm font-normal text-TxtPrimary-700" :class="{ hidden: !store.state.isSidebarOpen }">
-            Dashboard
-          </h2>
+          <h2 class="text-sm" :class="{ hidden: !store.state.isSidebarOpen }">Dashboard</h2>
         </router-link>
       </li>
       <li class="w-full cursor-pointer">

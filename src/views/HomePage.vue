@@ -1,12 +1,14 @@
 <script setup>
 import Sidebar from '../components/Sidebar.vue'
 import { ref } from 'vue'
+import Table from '../components/Table.vue'
+import Slider from 'primevue/slider'
 
+// Data untuk pie chart
 const chartOptionsPie = ref({
   chart: {
     type: 'pie'
   },
-
   labels: ['Oppo', 'Samsung', 'Iphone', 'Infinix', 'Vivo'],
   legend: {
     position: 'bottom',
@@ -55,6 +57,7 @@ const chartOptionsPie = ref({
 
 const chartSeriesPie = ref([44, 55, 13, 43, 22])
 
+// Data untuk grafik batang
 const barangMasukData = ref([
   {
     name: 'Barang Masuk',
@@ -73,7 +76,6 @@ const chartOptions = ref({
   chart: {
     type: 'bar'
   },
-
   xaxis: {
     categories: [
       'January',
@@ -93,78 +95,168 @@ const chartOptions = ref({
       style: {
         fontSize: '14px',
         fontWeight: '600',
-        colors: [],
         fontFamily: 'Helvetica, Arial, sans-serif',
         cssClass: 'apexcharts-xaxis-label',
-        rotate: -45,
-        offsetY: 0,
-        paddingTop: '5px'
+        rotate: -45
       },
       offsetY: 20
     }
   },
-  yaxis: {
-    title: {
-      text: 'Product',
-      fontWeight: '600'
-    }
-  },
+
   legend: {
     position: 'bottom',
     horizontalAlign: 'center'
   },
-  colors: []
+  colors: ['#003CA6']
 })
 
 const chartSeries = ref([...barangMasukData.value])
 
 const showBarangMasuk = () => {
   chartSeries.value = [...barangMasukData.value]
-  chartOptions.value.colors = ['#008FFB']
+  chartOptions.value = {
+    ...chartOptions.value,
+    colors: ['#003CA6']
+  }
 }
 
 const showBarangKeluar = () => {
   chartSeries.value = [...barangKeluarData.value]
-  chartOptions.value.colors = ['#00E396'] // Col
+  chartOptions.value = {
+    ...chartOptions.value,
+    colors: ['#FF4560']
+  }
 }
+
+const value = ref(50)
 </script>
 <template>
-  <!-- start sidebar -->
   <div class="bg-[rgb(240,241,243)] w-full min-h-screen flex justify-between gap-3 overflow-hidden">
-    <div class="w-[60vw] overflow-hidden">
+    <div class="w-[65vw] overflow-hidden">
       <section class="p-6 bg-white rounded-md">
-        <h2 class="text-2xl font-medium text-slate-700">Summary Packing</h2>
+        <h2 class="text-xl font-medium text-slate-700">Summary Packing</h2>
         <div class="flex justify-between">
-          <div class="rounded-md flex bg-white w-[275px] py-4 justify-start items-center p-5 gap-3">
-            <img src="/assets/images/Layers.svg" alt="" class="rounded-full h-7 w-7" />
+          <div class="rounded-md flex bg-white w-[275px] py-4 justify-start items-center p-5 gap-4">
+            <i class="fa-brands fa-product-hunt mt-4 text-[1.3rem] text-btnPrimary"></i>
             <div class="flex flex-col text-slate-600">
-              <span class="text-2xl">Rp 10.000.000,00</span>
-              <h3 class="text-sm">Jumlah Stok Barang</h3>
+              <h3 class="text-lg">Jumlah Stok Barang</h3>
+              <p class="mt-1 text-[1] font-medium text-btnPrimary">2.000</p>
+              <h4 class="mt-1 text-xs text-slate-400">Sejak bulan lalu</h4>
             </div>
           </div>
-          <div class="rounded-md flex bg-white w-[275px] py-4 justify-start items-center p-5 gap-3">
-            <img src="/assets/images/Layers.svg" alt="" class="rounded-full h-7 w-7" />
+          <div class="rounded-md flex bg-white w-[275px] py-4 justify-start items-center p-5 gap-4">
+            <i class="mt-2 text-[1.3rem] fa-solid fa-money-bill-trend-up text-btnPrimary"></i>
             <div class="flex flex-col text-slate-600">
-              <span class="text-2xl">Rp 13.000.000,00</span>
-              <h3 class="text-sm">Jumlah Saldo Barang</h3>
+              <h3 class="text-lg">Jumlah Saldo Barang</h3>
+              <p class="mt-1 text-[1rem] font-medium text-btnPrimary">Rp 13.000.000,00</p>
+              <h4 class="mt-1 text-xs text-slate-400">Sejak bulan lalu</h4>
             </div>
           </div>
         </div>
       </section>
 
       <section class="p-6 mt-3 bg-white rounded-md">
-        <h2 class="mb-5 text-2xl font-medium text-slate-700">Stock Report</h2>
-        <div class="flex items-center justify-center w-full chart-controls">
-          <button @click="showBarangMasuk" class="">Show Barang Masuk</button>
-          <button @click="showBarangKeluar">Show Barang Keluar</button>
+        <h2 class="mb-5 text-xl font-medium text-slate-700">Stock Report</h2>
+        <div class="flex items-center justify-center w-full gap-9 chart-controls">
+          <button class="flex items-center justify-center gap-2 text-sm text-slate-600" @click="showBarangMasuk">
+            <span class="inline-block w-2 h-2 rounded-full bg-[#003CA6]"></span>
+            Show Barang Masuk
+          </button>
+          <button class="flex items-center justify-center gap-2 text-sm text-slate-600" @click="showBarangKeluar">
+            <span class="inline-block w-2 h-2 rounded-full bg-[#FF4560]"></span>
+
+            Show Barang Keluar
+          </button>
         </div>
         <apexchart :options="chartOptions" :series="chartSeries" type="bar" height="380"></apexchart>
       </section>
+      <Table />
     </div>
-    <div class="w-[40vw]">
+    <div class="w-[35vw]">
       <section class="p-6 bg-white rounded-md">
-        <h2 class="mb-5 text-2xl font-medium text-slate-700">Jenis Stok Barang</h2>
+        <h2 class="mb-5 text-xl font-medium text-slate-700">Category of Stock</h2>
         <apexchart :options="chartOptionsPie" :series="chartSeriesPie" type="pie" height="380"></apexchart>
+      </section>
+      <section class="p-6 mt-2 bg-white rounded-md">
+        <h2 class="mb-2 text-xl font-medium text-slate-700">Top 3 Performance</h2>
+        <h3 class="mb-2 font-medium text-md text-slate-700">Barang Masuk</h3>
+        <ul class="flex flex-col gap-5">
+          <li class="flex flex-col gap-2">
+            <div class="flex items-center justify-between w-full">
+              <h3 class="text-xs text-slate-500">Samsung A05S</h3>
+              <span class="flex gap-2 text-green-600 tex-xs">
+                <i
+                  class="flex items-center justify-center w-5 h-5 p-3 rotate-45 bg-green-300 rounded-full fa-solid fa-arrow-up"
+                ></i>
+                122%
+              </span>
+            </div>
+            <Slider v-model="value" disabled class="text-red-600" />
+          </li>
+          <li class="flex flex-col gap-2">
+            <div class="flex items-center justify-between w-full">
+              <h3 class="text-sm text-slate-500">Samsung A05S</h3>
+              <span class="flex gap-2 text-green-600">
+                <i
+                  class="flex items-center justify-center w-5 h-5 p-3 rotate-45 bg-green-300 rounded-full fa-solid fa-arrow-up"
+                ></i>
+                122%
+              </span>
+            </div>
+            <Slider v-model="value" disabled class="text-red-600" />
+          </li>
+          <li class="flex flex-col gap-2">
+            <div class="flex items-center justify-between w-full">
+              <h3 class="text-sm text-slate-500">Samsung A05S</h3>
+              <span class="flex gap-2 text-green-600">
+                <i
+                  class="flex items-center justify-center w-5 h-5 p-3 rotate-45 bg-green-300 rounded-full fa-solid fa-arrow-up"
+                ></i>
+                122%
+              </span>
+            </div>
+            <Slider v-model="value" disabled class="text-red-600" />
+          </li>
+        </ul>
+        <h3 class="mt-4 mb-2 font-medium text-md text-slate-700">Barang Keluar</h3>
+        <ul class="flex flex-col gap-5">
+          <li class="flex flex-col gap-2">
+            <div class="flex items-center justify-between w-full">
+              <h3 class="text-xs text-slate-500">Samsung A05S</h3>
+              <span class="flex gap-2 text-green-600 tex-xs">
+                <i
+                  class="flex items-center justify-center w-5 h-5 p-3 rotate-45 bg-green-300 rounded-full fa-solid fa-arrow-up"
+                ></i>
+                122%
+              </span>
+            </div>
+            <Slider v-model="value" disabled class="text-red-600" />
+          </li>
+          <li class="flex flex-col gap-2">
+            <div class="flex items-center justify-between w-full">
+              <h3 class="text-sm text-slate-500">Samsung A05S</h3>
+              <span class="flex gap-2 text-green-600">
+                <i
+                  class="flex items-center justify-center w-5 h-5 p-3 rotate-45 bg-green-300 rounded-full fa-solid fa-arrow-up"
+                ></i>
+                122%
+              </span>
+            </div>
+            <Slider v-model="value" disabled class="text-red-600" />
+          </li>
+          <li class="flex flex-col gap-2">
+            <div class="flex items-center justify-between w-full">
+              <h3 class="text-sm text-slate-500">Samsung A05S</h3>
+              <span class="flex gap-2 text-green-600">
+                <i
+                  class="flex items-center justify-center w-5 h-5 p-3 rotate-45 bg-green-300 rounded-full fa-solid fa-arrow-up"
+                ></i>
+                122%
+              </span>
+            </div>
+            <Slider v-model="value" disabled class="text-red-600" />
+          </li>
+        </ul>
       </section>
     </div>
   </div>
@@ -173,6 +265,25 @@ const showBarangKeluar = () => {
 .chart-controls {
   margin-bottom: 20px;
   display: flex;
-  gap: 10px;
+}
+.slider-container {
+  position: relative;
+  width: 100%;
+}
+
+.custom-slider .p-slider-handle {
+  display: none;
+}
+
+.custom-slider .p-slider {
+  padding: 0;
+}
+
+.slider-value {
+  position: absolute;
+  right: 0;
+  top: 2px;
+  font-size: 1rem;
+  color: #000;
 }
 </style>
