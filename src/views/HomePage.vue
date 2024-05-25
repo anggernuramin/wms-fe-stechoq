@@ -134,28 +134,6 @@ const value = ref(50)
   <div class="bg-[rgb(240,241,243)] w-full min-h-screen flex justify-between gap-3 overflow-hidden">
     <div class="w-[65vw] overflow-hidden">
       <section class="p-6 bg-white rounded-md">
-        <h2 class="text-xl font-medium text-slate-700">Summary Packing</h2>
-        <div class="flex justify-between">
-          <div class="rounded-md flex bg-white w-[275px] py-4 justify-start items-center p-5 gap-4">
-            <i class="fa-brands fa-product-hunt mt-4 text-[1.3rem] text-btnPrimary"></i>
-            <div class="flex flex-col text-slate-600">
-              <h3 class="text-lg">Jumlah Stok Barang</h3>
-              <p class="mt-1 text-[1] font-medium text-btnPrimary">2.000</p>
-              <h4 class="mt-1 text-xs text-slate-400">Sejak bulan lalu</h4>
-            </div>
-          </div>
-          <div class="rounded-md flex bg-white w-[275px] py-4 justify-start items-center p-5 gap-4">
-            <i class="mt-2 text-[1.3rem] fa-solid fa-money-bill-trend-up text-btnPrimary"></i>
-            <div class="flex flex-col text-slate-600">
-              <h3 class="text-lg">Jumlah Saldo Barang</h3>
-              <p class="mt-1 text-[1rem] font-medium text-btnPrimary">Rp 13.000.000,00</p>
-              <h4 class="mt-1 text-xs text-slate-400">Sejak bulan lalu</h4>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="p-6 mt-3 bg-white rounded-md">
         <h2 class="mb-5 text-xl font-medium text-slate-700">Stock Report</h2>
         <div class="flex items-center justify-center w-full gap-9 chart-controls">
           <button class="flex items-center justify-center gap-2 text-sm text-slate-600" @click="showBarangMasuk">
@@ -174,11 +152,33 @@ const value = ref(50)
     </div>
     <div class="w-[35vw]">
       <section class="p-6 bg-white rounded-md">
+        <h2 class="text-xl font-medium text-slate-700">Summary Packing</h2>
+        <div class="flex justify-between gap-1">
+          <div class="rounded-md flex bg-white w-[275px] py-4 justify-start items-center p-5 gap-4">
+            <i class="fa-brands fa-product-hunt mt-4 text-[1.5rem] text-btnPrimary"></i>
+            <div class="flex flex-col text-slate-600">
+              <h3 class="text-md">Jumlah Stok Barang</h3>
+              <p class="mt-1 text-[1] font-medium text-btnPrimary">2.000</p>
+              <h4 class="mt-1 text-xs text-slate-400">Sejak bulan lalu</h4>
+            </div>
+          </div>
+          <div class="rounded-md flex bg-white w-[275px] py-4 justify-start items-center p-5 gap-4">
+            <i class="mt-2 text-[1.5rem] fa-solid fa-money-bill-trend-up text-btnPrimary"></i>
+            <div class="flex flex-col text-slate-600">
+              <h3 class="text-md">Jumlah Saldo Barang</h3>
+              <p class="mt-1 text-[1rem] font-medium text-btnPrimary">Rp 13.000.000,00</p>
+              <h4 class="mt-1 text-xs text-slate-400">Sejak bulan lalu</h4>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="p-6 mt-3 bg-white rounded-md">
         <h2 class="mb-5 text-xl font-medium text-slate-700">Category of Stock</h2>
         <apexchart :options="chartOptionsPie" :series="chartSeriesPie" type="pie" height="380"></apexchart>
       </section>
       <section class="p-6 mt-2 bg-white rounded-md">
-        <h2 class="mb-2 text-xl font-medium text-slate-700">Top 3 Performance</h2>
+        <h2 class="text-xl font-medium mb-7 text-slate-700">Top 3 Performance</h2>
         <h3 class="mb-2 font-medium text-md text-slate-700">Barang Masuk</h3>
         <ul class="flex flex-col gap-5">
           <li class="flex flex-col gap-2">
@@ -195,7 +195,7 @@ const value = ref(50)
           </li>
           <li class="flex flex-col gap-2">
             <div class="flex items-center justify-between w-full">
-              <h3 class="text-sm text-slate-500">Samsung A05S</h3>
+              <h3 class="text-xs text-slate-500">Samsung A05S</h3>
               <span class="flex gap-2 text-green-600">
                 <i
                   class="flex items-center justify-center w-5 h-5 p-3 rotate-45 bg-green-300 rounded-full fa-solid fa-arrow-up"
@@ -203,11 +203,12 @@ const value = ref(50)
                 122%
               </span>
             </div>
-            <Slider v-model="value" disabled class="text-red-600" />
+            <Slider v-model="value" disabled class="text-red-600 appearance-none" />
           </li>
+
           <li class="flex flex-col gap-2">
             <div class="flex items-center justify-between w-full">
-              <h3 class="text-sm text-slate-500">Samsung A05S</h3>
+              <h3 class="text-xs text-slate-500">Samsung A05S</h3>
               <span class="flex gap-2 text-green-600">
                 <i
                   class="flex items-center justify-center w-5 h-5 p-3 rotate-45 bg-green-300 rounded-full fa-solid fa-arrow-up"
@@ -218,7 +219,7 @@ const value = ref(50)
             <Slider v-model="value" disabled class="text-red-600" />
           </li>
         </ul>
-        <h3 class="mt-4 mb-2 font-medium text-md text-slate-700">Barang Keluar</h3>
+        <h3 class="mt-10 mb-2 font-medium text-md text-slate-700">Barang Keluar</h3>
         <ul class="flex flex-col gap-5">
           <li class="flex flex-col gap-2">
             <div class="flex items-center justify-between w-full">
@@ -234,7 +235,7 @@ const value = ref(50)
           </li>
           <li class="flex flex-col gap-2">
             <div class="flex items-center justify-between w-full">
-              <h3 class="text-sm text-slate-500">Samsung A05S</h3>
+              <h3 class="text-xs text-slate-500">Samsung A05S</h3>
               <span class="flex gap-2 text-green-600">
                 <i
                   class="flex items-center justify-center w-5 h-5 p-3 rotate-45 bg-green-300 rounded-full fa-solid fa-arrow-up"
@@ -246,7 +247,7 @@ const value = ref(50)
           </li>
           <li class="flex flex-col gap-2">
             <div class="flex items-center justify-between w-full">
-              <h3 class="text-sm text-slate-500">Samsung A05S</h3>
+              <h3 class="text-xs text-slate-500">Samsung A05S</h3>
               <span class="flex gap-2 text-green-600">
                 <i
                   class="flex items-center justify-center w-5 h-5 p-3 rotate-45 bg-green-300 rounded-full fa-solid fa-arrow-up"
@@ -266,24 +267,9 @@ const value = ref(50)
   margin-bottom: 20px;
   display: flex;
 }
-.slider-container {
-  position: relative;
-  width: 100%;
-}
-
-.custom-slider .p-slider-handle {
-  display: none;
-}
-
-.custom-slider .p-slider {
-  padding: 0;
-}
-
-.slider-value {
-  position: absolute;
-  right: 0;
-  top: 2px;
-  font-size: 1rem;
-  color: #000;
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none; /* Menghilangkan thumb */
 }
 </style>

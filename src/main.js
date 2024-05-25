@@ -9,6 +9,7 @@ import VueApexCharts from 'vue3-apexcharts'
 import PrimeVue from 'primevue/config'
 import 'vue-toast-notification/dist/theme-bootstrap.css'
 import 'v-calendar/style.css'
+import 'primeicons/primeicons.css'
 
 // Use plugin with optional defaults
 

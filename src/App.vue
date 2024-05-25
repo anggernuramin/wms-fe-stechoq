@@ -1,3 +1,11 @@
+<script setup>
+import Footer from './components/Footer.vue'
+import Header from './components/Header.vue'
+</script>
 <template>
-  <main class="min-h-screen bg-primary"><router-view /></main>
+  <main class="relative min-h-screen bg-primary">
+    <Header />
+    <router-view />
+    <Footer />
+  </main>
 </template>

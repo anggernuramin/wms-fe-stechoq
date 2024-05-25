@@ -53,7 +53,7 @@ export const deleteBarangMasuk = async (id) => {
 export const searchBarangMasuk = async (query) => {
   try {
     let res = await axios.get(
-      `${import.meta.env.VITE_VUE_APP_BASE_URL}/searchBM?search_query=${query.queries}&page=0&limit=10`,
+      `${import.meta.env.VITE_VUE_APP_BASE_URL}/searchBM?search_query=${query}&page=0&limit=10`,
       {
         headerConfig
       }

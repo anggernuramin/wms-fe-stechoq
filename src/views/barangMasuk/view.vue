@@ -6,7 +6,8 @@ import { getAllCategory } from '../../services/category.services.js'
 import { useRouter } from 'vue-router'
 
 const barangMasuk = ref([])
-const barangMasukSort = ref([])
+const resultBarangMasuk = ref([])
+const selectCategory = ref('')
 const category = ref([])
 const query = ref('')
 const isLoading = ref(false)
@@ -17,6 +18,7 @@ onMounted(async () => {
   try {
     isLoading.value = true
     const res = await getAllBarangMasuk(currentPage.value)
+    console.log('🚀 ~ onMounted ~ res:', res)
     category.value = await getAllCategory()
     barangMasuk.value = res
     isLoading.value = false
@@ -31,6 +33,7 @@ const fetchData = async () => {
     isLoading.value = true
     const res = await getAllBarangMasuk(currentPage.value)
     barangMasuk.value = res
+    resultBarangMasuk.value = res
     isLoading.value = false
   } catch (error) {
     toast.error(error)
@@ -49,18 +52,24 @@ const handleSearchBarangMasuk = async (e) => {
 }
 
 const sortingBarangMasuk = (name) => {
+  selectCategory.value = name
   if (!name) {
-    return (barangMasukSort.value = [])
+    return (resultBarangMasuk.value = barangMasuk.value)
+  }
+
+  if (name == 'All') {
+    return (resultBarangMasuk.value = barangMasuk.value)
   }
   const filterData = barangMasuk.value.filter((item) => {
     return item.Kategori.toUpperCase().includes(name.toUpperCase())
   })
-  return (barangMasukSort.value = filterData)
+
+  return (resultBarangMasuk.value = filterData)
 }
 </script>
 
 <template>
-  <div class="relative overflow-x-auto max-h-[100vh]">
+  <div class="relative h-full overflow-x-auto">
     <section class="rounded-md shadow-md bg-secondary">
       <header class="flex items-center justify-between w-full px-5 pt-3 overflow-hidden rounded-md">
         <h1 class="font-medium text-md text-slate-700">
@@ -86,7 +95,7 @@ const sortingBarangMasuk = (name) => {
                 v-model="query"
                 type="search"
                 class="border-0 outline-none text-slate-600 bg-secondary"
-                placeholder="Search"
+                placeholder="Search By Name Product"
               />
               <button type="submit" @click="handleSearchBarangMasuk">
                 <svg
@@ -115,8 +124,14 @@ const sortingBarangMasuk = (name) => {
             </div>
 
             <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-primary rounded-box w-52">
-              <li v-for="(item, index) in category" :key="index">
-                <a @click="sortingBarangMasuk(item.Nama)">{{ item.Nama }}</a>
+              <li v-for="(item, index) in category" :key="index" class="transition-all hover:bg-slate-200">
+                <a @click="sortingBarangMasuk(item.Nama)" class="font-normal text-slate-800">{{ item.Nama }}</a>
+              </li>
+              <li
+                class="py-2 pl-5 pr-2 font-normal transition-all text-slate-800 hover:bg-slate-200"
+                @click="sortingBarangMasuk(All)"
+              >
+                All
               </li>
             </ul>
           </div>
@@ -125,60 +140,6 @@ const sortingBarangMasuk = (name) => {
       <div v-if="isLoading" class="flex items-center justify-center min-h-[75vh]">
         <span class="my-16 loading loading-spinner loading-lg"></span>
       </div>
-      <template v-else-if="barangMasukSort.length > 0">
-        <table class="table rounded-sm">
-          <thead class="bg-zinc-50">
-            <tr class="text-sm font-light text-slate-700 border-b-slate-100">
-              <th class="font-medium">#</th>
-              <th class="font-medium">Kode</th>
-              <th class="font-medium">Product</th>
-              <th class="font-medium">Kategori</th>
-              <th class="font-medium">Keterangan</th>
-              <th class="font-medium">Tanggal</th>
-              <th class="font-medium">Jam</th>
-
-              <th class="font-medium">Aksi</th>
-            </tr>
-          </thead>
-          <tbody class="text-xs font-light text-TxtPrimary-700">
-            <template v-if="barangMasukSort.length > 0">
-              <tr v-for="(item, index) in barangMasuk" :key="index" class="font-normal border-b-slate-100">
-                <td>{{ index + 1 }}</td>
-                <td>{{ item.id_BM }}</td>
-                <td>{{ item.Nama_Produk }}</td>
-                <td>{{ item.Kategori }}</td>
-                <td>{{ item.Keterangan_BM }}</td>
-                <td>{{ formatDate(item.createdAt) }}</td>
-                <td>{{ formatDate(item.createdAt) }}</td>
-
-                <td class="flex gap-3">
-                  <router-link :to="'/barang-masuk/detail/' + item?.id_BM">
-                    <i class="text-[14px] text-slate-700 fa-solid fa-eye" aria-hidden="true"></i>
-                  </router-link>
-                  <router-link :to="'/barang-masuk/edit/' + item?.id_BM">
-                    <i class="text-[14px] text-warning fa fa-pencil" aria-hidden="true"></i>
-                  </router-link>
-                  <router-link :to="'/barang-masuk/delete/' + item?.id_BM">
-                    <i class="text-[14px] text-error fa fa-trash" aria-hidden="true"></i>
-                  </router-link>
-                </td>
-              </tr>
-            </template>
-            <template v-else>
-              <tr>
-                <td colspan="8" class="text-center">Tidak ada data</td>
-              </tr>
-            </template>
-          </tbody>
-        </table>
-        <div class="flex items-center justify-end gap-5 py-5 mt-3 border-t pe-16 text-TxtPrimary-700">
-          <button class="btn-sm-default">Previous</button>
-          <span
-            >Page <b>{{ currentPage.value }}</b> of <b>10</b></span
-          >
-          <button class="btn-sm-default">Next</button>
-        </div>
-      </template>
       <template v-else>
         <table class="table rounded-sm">
           <thead class="bg-zinc-50">
@@ -189,21 +150,18 @@ const sortingBarangMasuk = (name) => {
               <th class="font-medium">Kategori</th>
               <th class="font-medium">Keterangan</th>
               <th class="font-medium">Tanggal</th>
-              <th class="font-medium">Jam</th>
-
               <th class="font-medium">Aksi</th>
             </tr>
           </thead>
           <tbody class="text-xs font-light text-TxtPrimary-700">
-            <template v-if="barangMasuk.length > 0">
+            <template v-if="resultBarangMasuk.length > 0">
               <tr v-for="(item, index) in barangMasuk" :key="index" class="font-normal border-b-slate-100">
                 <td>{{ index + 1 }}</td>
-                <td>{{ item.id_BM }}</td>
-                <td>{{ item.Nama_Produk }}</td>
-                <td>{{ item.Kategori }}</td>
-                <td>{{ item.Keterangan_BM }}</td>
-                <td>{{ formatDate(item.createdAt) }}</td>
-                <td>{{ formatDate(item.createdAt) }}</td>
+                <td>{{ item?.id_BM }}</td>
+                <td>{{ item?.Nama_Produk }}</td>
+                <td>{{ item?.Kategori }}</td>
+                <td>{{ item?.Keterangan_BM }}</td>
+                <td>{{ item?.tanggal }}</td>
 
                 <td class="flex gap-3">
                   <router-link :to="'/barang-masuk/detail/' + item?.id_BM">
@@ -218,6 +176,11 @@ const sortingBarangMasuk = (name) => {
                 </td>
               </tr>
             </template>
+            <div v-else class="block w-full pl-4 my-5 text-lg font-normal text-left text-red-600">
+              <p class="block w-full">
+                Data dengan Kategori <span class="font-bold">{{ selectCategory }}</span> Tidak ada
+              </p>
+            </div>
           </tbody>
         </table>
         <div class="flex items-center justify-end gap-5 py-5 mt-3 border-t pe-16 text-TxtPrimary-700">
