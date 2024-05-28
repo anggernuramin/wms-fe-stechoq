@@ -102,8 +102,8 @@ const openOptionProduct = () => {
       </h3>
       <li class="w-full mb-1">
         <router-link
-          to="/barang-masuk"
-          class="flex items-center justify-start w-full gap-3 p-2 px-3 font-medium rounded-md text-TxtPrimary-70 hover:bg-slate-100"
+          to="/kartu-stock"
+          class="flex items-center justify-start w-full gap-3 p-2 px-3 font-medium rounded-md text-TxtPrimary-70"
           :class="{
             'bg-btnPrimary  text-slate-50': location.path === '/kartu-stock',
             'bg-secondary text-TxtPrimary-700': location.path !== '/kartu-stock'
