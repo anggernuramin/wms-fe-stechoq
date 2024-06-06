@@ -5,7 +5,8 @@ export const getAllProduct = async () => {
   try {
     const res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/produk`, {
       headers: {
-        'Cache-Control': 'no-cache' // Mengatur header Cache-Control untuk memastikan data selalu diambil dari server
+        'Cache-Control': 'no-cache',
+        Authorization: `Bearer ${import.meta.env.VITE_VUE_TOKEN}`
       }
     })
     return res.data.data
@@ -20,7 +21,8 @@ export const pagedProduct = async (id, limit, teks) => {
       `${import.meta.env.VITE_VUE_APP_BASE_URL}/searchProduk?search_query=${teks}&page=${id.value - 1}&limit=${limit}`,
       {
         headers: {
-          'Cache-Control': 'no-cache' // Mengatur header Cache-Control untuk memastikan data selalu diambil dari server
+          'Cache-Control': 'no-cache',
+          Authorization: `Bearer ${import.meta.env.VITE_VUE_TOKEN}`
         }
       }
     )
@@ -32,7 +34,12 @@ export const pagedProduct = async (id, limit, teks) => {
 
 export const getProductById = async (id) => {
   try {
-    const res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/produk/${id}`)
+    const res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/produk/${id}`, {
+      headers: {
+        'Cache-Control': 'no-cache',
+        Authorization: `Bearer ${import.meta.env.VITE_VUE_TOKEN}`
+      }
+    })
     console.log('🚀 ~ getProductById ~ res:', res.datadata)
     return res.data.data
   } catch (error) {
@@ -42,7 +49,13 @@ export const getProductById = async (id) => {
 
 export const deleteProduct = async (id) => {
   try {
-    const res = await axios.delete(`${import.meta.env.VITE_VUE_APP_BASE_URL}/produk/${id}`)
+    const res = await axios.delete(`${import.meta.env.VITE_VUE_APP_BASE_URL}/produk/${id}`, {
+      headers: {
+        'Cache-Control': 'no-cache',
+        Authorization: `Bearer ${import.meta.env.VITE_VUE_TOKEN}`
+      }
+    })
+
     console.log('🚀 ~ deleteProduct ~ res:', res)
     return res.data.statusCode
   } catch (error) {
@@ -58,7 +71,10 @@ export const addNameProduct = async (name) => {
         seri: capitalizeFirstLetter(name)
       },
       {
-        headers: { 'Content-Type': 'application/json' }
+        headers: {
+          'Cache-Control': 'no-cache',
+          Authorization: `Bearer ${import.meta.env.VITE_VUE_TOKEN}`
+        }
       }
     )
     return res
