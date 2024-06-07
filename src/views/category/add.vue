@@ -21,6 +21,7 @@ const rules = {
   name: { required: { ...required, message: ERROR } }
 }
 
+const tokem = localStorage.getItem('token')
 const v$ = useVuelidate(rules, state)
 const router = useRouter()
 
@@ -37,7 +38,10 @@ const submitAddProduct = async () => {
           Nama: state.name.toUpperCase()
         },
         {
-          headers: { 'Content-Type': 'application/json' }
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${tokem}`
+          }
         }
       )
       isSubmit.value = true

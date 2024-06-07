@@ -1,12 +1,14 @@
 import axios from 'axios'
 import { capitalizeFirstLetter } from '../libs/capitalizeFirstLetter'
 
+const token = localStorage.getItem('token')
+
 export const getAllProduct = async () => {
   try {
     const res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/produk`, {
       headers: {
         'Cache-Control': 'no-cache',
-        Authorization: `Bearer ${import.meta.env.VITE_VUE_TOKEN}`
+        Authorization: `Bearer ${token}`
       }
     })
     return res.data.data
@@ -22,7 +24,7 @@ export const pagedProduct = async (id, limit, teks) => {
       {
         headers: {
           'Cache-Control': 'no-cache',
-          Authorization: `Bearer ${import.meta.env.VITE_VUE_TOKEN}`
+          Authorization: `Bearer ${token}`
         }
       }
     )
@@ -37,7 +39,7 @@ export const getProductById = async (id) => {
     const res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/produk/${id}`, {
       headers: {
         'Cache-Control': 'no-cache',
-        Authorization: `Bearer ${import.meta.env.VITE_VUE_TOKEN}`
+        Authorization: `Bearer ${token}`
       }
     })
     console.log('🚀 ~ getProductById ~ res:', res.datadata)
@@ -52,7 +54,7 @@ export const deleteProduct = async (id) => {
     const res = await axios.delete(`${import.meta.env.VITE_VUE_APP_BASE_URL}/produk/${id}`, {
       headers: {
         'Cache-Control': 'no-cache',
-        Authorization: `Bearer ${import.meta.env.VITE_VUE_TOKEN}`
+        Authorization: `Bearer ${token}`
       }
     })
 
@@ -73,7 +75,7 @@ export const addNameProduct = async (name) => {
       {
         headers: {
           'Cache-Control': 'no-cache',
-          Authorization: `Bearer ${import.meta.env.VITE_VUE_TOKEN}`
+          Authorization: `Bearer ${token}`
         }
       }
     )

@@ -56,12 +56,6 @@ const updateSearch = (event) => {
           :path="[{ name: 'Dashboard', url: '/' }]"
           :pathActive="{ name: 'Kartu Stock', url: location?.name }"
         />
-
-        <div class="flex gap-3">
-          <router-link to="/barangkeluar/add" class="flex items-center justify-center gap-2 bg-red-400 btn-sm-success">
-            <i class="fas fa-plus"></i> Barang Keluar
-          </router-link>
-        </div>
       </header>
       <hr class="my-4" />
 

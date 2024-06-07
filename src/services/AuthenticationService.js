@@ -12,15 +12,15 @@ export default {
   },
   logout() {
     localStorage.removeItem('token')
-    localStorage.removeItem('tokenExpiration')
-  }
-  // isLoggedIn() {
-  //   const token = localStorage.getItem('token')
-  //   const expirationDate = localStorage.getItem('tokenExpiration')
-  //   const now = new Date().getTime()
+    localStorage.removeItem('refreshToken')
+  },
+  isLoggedIn() {
+    const token = localStorage.getItem('token')
+    const expirationDate = localStorage.getItem('refreshToken')
+    const now = new Date().getTime()
 
-  //   return token && expirationDate && now < expirationDate
-  // }
+    return token && expirationDate && now < expirationDate
+  }
 }
 
 // AuthenticationService.register({

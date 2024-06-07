@@ -1,5 +1,7 @@
 import axios from 'axios'
 
+const token = localStorage.getItem('token')
+
 export const GetBarangKeluar = async (teks, id) => {
   try {
     const res = await axios.get(
@@ -7,7 +9,7 @@ export const GetBarangKeluar = async (teks, id) => {
       {
         headers: {
           'Cache-Control': 'no-cache',
-          Authorization: `Bearer ${import.meta.env.VITE_VUE_TOKEN}`
+          Authorization: `Bearer ${token}`
         }
       }
     )
@@ -22,7 +24,7 @@ export const GetBarangKeluarID = async (teks) => {
     const res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/barangKeluar/getByID/${teks}`, {
       headers: {
         'Cache-Control': 'no-cache',
-        Authorization: `Bearer ${import.meta.env.VITE_VUE_TOKEN}`
+        Authorization: `Bearer ${token}`
       }
     })
     return res.data.data
@@ -36,7 +38,7 @@ export const DeleteBarangKeluar = async (id) => {
     const res = await axios.delete(`${import.meta.env.VITE_VUE_APP_BASE_URL}/barangKeluar/delete/${id}`, {
       headers: {
         'Cache-Control': 'no-cache',
-        Authorization: `Bearer ${import.meta.env.VITE_VUE_TOKEN}`
+        Authorization: `Bearer ${token}`
       }
     })
     console.log('🚀 ~ deleteBarangKeluar ~ res:', res)
@@ -51,7 +53,7 @@ export const UpdateBarangkeluar = async (id) => {
     const res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/barangKeluar/update/${id}`, {
       headers: {
         'Cache-Control': 'no-cache',
-        Authorization: `Bearer ${import.meta.env.VITE_VUE_TOKEN}`
+        Authorization: `Bearer ${token}`
       }
     })
     console.log('🚀 ~ deleteBarangKeluar ~ res:', res)
@@ -66,7 +68,7 @@ export const submitAddout = async (data) => {
     const res = await axios.post(`${import.meta.env.VITE_VUE_APP_BASE_URL}/barangKeluar/createProduk`, data, {
       headers: {
         'Cache-Control': 'no-cache',
-        Authorization: `Bearer ${import.meta.env.VITE_VUE_TOKEN}`
+        Authorization: `Bearer ${token}`
       }
     })
     console.log('POST request successful:', res)

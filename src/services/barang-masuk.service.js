@@ -1,10 +1,13 @@
 import axios from 'axios'
 import { ref } from 'vue'
 
+const token = localStorage.getItem('token')
+
 const headerConfig = {
   headers: {
     'Cache-Control': 'no-cache',
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`
   }
 }
 
