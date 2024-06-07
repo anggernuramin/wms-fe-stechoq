@@ -2,20 +2,20 @@
 import { useRoute } from 'vue-router'
 import { onMounted, ref } from 'vue'
 import Breadcrums from '../../components/Breadcrums.vue'
-import { GetBarangKeluar } from '../../services/barangkeluar.services'
+import { GetStock } from '../../services/stock.services'
 
 const location = useRoute()
 const data = ref([])
 const errorMessage = ref('')
 const isLoading = ref(false)
 const currentPage = ref(1)
-const totalPages = ref(10)
+const totalPages = ref(5)
 const search = ref('')
 
 const fetchData = async () => {
   try {
     isLoading.value = true
-    const response = await GetBarangKeluar(search.value, currentPage)
+    const response = await GetStock(currentPage)
     isLoading.value = false
     data.value = response
   } catch (error) {
@@ -110,11 +110,11 @@ const updateSearch = (event) => {
           <template v-if="data.length">
             <tr v-for="(item, index) in data" :key="index" class="font-normal border-b-slate-100">
               <td>{{ index + 1 }}</td>
-              <td>{{ item.id_BK }}</td>
-              <td>{{ item.Keterangan }}</td>
               <td>{{ item.Nama_Produk }}</td>
               <td>{{ item.Kategori }}</td>
-              <td>{{ item.Quantity_Keluar }}</td>
+              <td>{{ item.Qty_Awal }}</td>
+              <td>{{ item.Qty_Keluar }}</td>
+              <td>{{ item.Qty_Sekarang }}</td>
             </tr>
           </template>
         </tbody>

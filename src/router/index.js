@@ -171,13 +171,13 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
-  const isLoggedIn = AuthenticationService.isLoggedIn()
-  if (to.matched.some((record) => record.meta.requiresAuth) && !isLoggedIn) {
-    next('/login')
-  } else {
-    next()
-  }
-})
+// router.beforeEach((to, from, next) => {
+//   const isLoggedIn = AuthenticationService.isLoggedIn()
+//   if (to.matched.some((record) => record.meta.requiresAuth) && !isLoggedIn) {
+//     next('/login')
+//   } else {
+//     next()
+//   }
+// })
 
 export default router
