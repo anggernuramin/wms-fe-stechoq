@@ -2,7 +2,8 @@ import { createStore } from 'vuex'
 
 export default createStore({
   state: {
-    isSidebarOpen: true
+    isSidebarOpen: true,
+    user: {}
   },
   getters: {},
   mutations: {

@@ -1,5 +1,5 @@
 <template>
-  <section class="w-full min-h-screen bg-custom-bg bg-repeat bg-cover bg-center shadow-md">
+  <section class="w-full min-h-screen bg-center bg-repeat bg-cover shadow-md bg-custom-bg">
     <div class="flex items-center justify-center w-full min-h-screen bg-slate-700 bg-opacity-70">
       <div class="flex flex-col justify-center flex-1 max-w-sm min-h-full p-5 px-6 py-12 bg-white bg-opacity-4 lg:px-8">
         <div class="max-w-sm rounded-md sm:mx-auto sm:w-full">
@@ -124,13 +124,13 @@ export default {
       }
       try {
         await AuthenticationService.register({
-          name: this.name,
+          username: this.name,
           email: this.email,
-          password: this.password
+          password: this.password,
+          confPassword: this.confirmPassword,
+          role: 'superadmin'
         })
-        alert('Berhasil mendaftar.')
-        // redirect to login page
-        this.$router.push({ name: 'login' })
+        this.$router.push('/login')
       } catch (err) {
         if (err.response && err.response.data) {
           this.error = err.response.data.error

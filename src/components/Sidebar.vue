@@ -61,44 +61,9 @@ const openOptionProduct = () => {
           <h2 class="text-sm" :class="{ hidden: !store.state.isSidebarOpen }">Dashboard</h2>
         </router-link>
       </li>
-      <li class="w-full cursor-pointer">
-        <div
-          class="flex items-center justify-start w-full gap-3 p-2 px-3 rounded-md bg-secondary"
-          @click="openOptionLaporan"
-        >
-          <i class="text-TxtPrimary-700 fas fa-briefcase"></i>
-          <h2
-            class="flex items-center justify-between w-full text-sm font-medium text-TxtPrimary-700"
-            :class="{ hidden: !store.state.isSidebarOpen }"
-          >
-            Laporan Barang <i class="text-xs fas fa-chevron-down"></i>
-          </h2>
-        </div>
-        <ul
-          :style="{ height: isOpenLaporan ? '80px' : '0px' }"
-          class="flex flex-col gap-1 mt-1 overflow-hidden transition display-collapse animated faster"
-        >
-          <li class="w-full">
-            <router-link to="/barang-masuk" class="btn-sidebar">
-              <!-- <i class="text-TxtPrimary-700 fas fa-briefcase"></i> -->
-              <h2 class="text-sm font-medium text-TxtPrimary-700 ps-7" :class="{ hidden: !store.state.isSidebarOpen }">
-                Laporan Stok Barang
-              </h2>
-            </router-link>
-          </li>
-          <li class="w-full">
-            <router-link to="/barang-masuk" class="btn-sidebar">
-              <!-- <i class="text-TxtPrimary-700 fas fa-briefcase"></i> -->
-              <h2 class="text-sm font-medium text-TxtPrimary-700 ps-7" :class="{ hidden: !store.state.isSidebarOpen }">
-                Laporan Saldo Barang
-              </h2>
-            </router-link>
-          </li>
-        </ul>
-      </li>
 
       <h3 class="my-2 text-xs font-medium text-TxtPrimary-700 ps-3" :class="{ hidden: !store.state.isSidebarOpen }">
-        PRODUK
+        Product
       </h3>
       <li class="w-full mb-1">
         <router-link
@@ -179,30 +144,11 @@ const openOptionProduct = () => {
           <h2 class="text-sm" :class="{ hidden: !store.state.isSidebarOpen }">Barang Keluar</h2>
         </router-link>
       </li>
-      <li class="w-full">
-        <router-link to="/barang-masuk" class="btn-sidebar">
-          <i class="text-TxtPrimary-700 fas fa-briefcase"></i>
-
-          <h2 class="text-sm font-medium text-TxtPrimary-700" :class="{ hidden: !store.state.isSidebarOpen }">
-            Pengiriman
-          </h2>
-        </router-link>
-      </li>
 
       <h3 class="my-2 text-xs font-medium ps-3 text-TxtPrimary-700" :class="{ hidden: !store.state.isSidebarOpen }">
         Pengaturan
       </h3>
-      <li class="w-full">
-        <router-link
-          to="/barang-masuk"
-          class="flex items-center justify-start w-full gap-3 p-2 px-3 rounded-md bg-secondary"
-        >
-          <i class="text-TxtPrimary-700 fas fa-cog"></i>
-          <h2 class="text-sm font-medium text-TxtPrimary-700" :class="{ hidden: !store.state.isSidebarOpen }">
-            Settings
-          </h2>
-        </router-link>
-      </li>
+
       <li class="w-full mb-3">
         <router-link
           to="/barang-masuk"

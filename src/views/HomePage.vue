@@ -1,8 +1,23 @@
 <script setup>
 import Sidebar from '../components/Sidebar.vue'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import Table from '../components/Table.vue'
 import Slider from 'primevue/slider'
+import { getAllJumlahStockBarang, getAllJumlahSaldoBarang } from '../services/dashboard-service'
+import { formatAngka } from '../libs/formatAngka.js'
+import { formatCurrentDate } from '../libs/formatCurrentDate.js'
+import { formatRupiah } from '../libs/formatRupiah.js'
+
+const jumlahStockBarang = ref(null)
+const jumlahSaldoBarang = ref(null)
+const optionMonths = ref([])
+const labelsCategory = ref([])
+const stocksCategory = ref([])
+const stocksBarangMasuk = ref([])
+const stocksBarangKeluar = ref([])
+const topProducts = ref([])
+const topBarangMasuk = ref([])
+const topBarangKeluar = ref([])
 
 // Data untuk pie chart
 const chartOptionsPie = ref({
@@ -97,7 +112,8 @@ const chartOptions = ref({
         fontWeight: '600',
         fontFamily: 'Helvetica, Arial, sans-serif',
         cssClass: 'apexcharts-xaxis-label',
-        rotate: -45
+        rotate: -45,
+        colors: ['#000000']
       },
       offsetY: 20
     }
@@ -128,11 +144,22 @@ const showBarangKeluar = () => {
   }
 }
 
+onMounted(() => {
+  const token = localStorage.getItem('token')
+  if (token) {
+  } else {
+  }
+})
+onMounted(async () => {
+  jumlahStockBarang.value = await getAllJumlahStockBarang()
+  jumlahSaldoBarang.value = await getAllJumlahSaldoBarang()
+})
+
 const value = ref(50)
 </script>
 <template>
   <div class="bg-[rgb(240,241,243)] w-full min-h-screen flex justify-between gap-3 overflow-hidden">
-    <div class="w-[65vw] overflow-hidden">
+    <div class="w-[65vw]">
       <section class="p-6 bg-white rounded-md">
         <h2 class="mb-5 text-xl font-medium text-slate-700">Stock Report</h2>
         <div class="flex items-center justify-center w-full gap-9 chart-controls">
@@ -158,16 +185,20 @@ const value = ref(50)
             <i class="fa-brands fa-product-hunt mt-4 text-[1.5rem] text-btnPrimary"></i>
             <div class="flex flex-col text-slate-600">
               <h3 class="text-md">Jumlah Stok Barang</h3>
-              <p class="mt-1 text-[1] font-medium text-btnPrimary">2.000</p>
-              <h4 class="mt-1 text-xs text-slate-400">Sejak bulan lalu</h4>
+              <p class="mt-1 text-[1] font-medium text-btnPrimary">
+                {{ jumlahStockBarang === null ? 'loading. . .' : formatAngka(jumlahStockBarang) }}
+              </p>
+              <h4 class="mt-1 text-xs text-slate-400">Terhitung Sejak {{ formatCurrentDate }}</h4>
             </div>
           </div>
           <div class="rounded-md flex bg-white w-[275px] py-4 justify-start items-center p-5 gap-4">
             <i class="mt-2 text-[1.5rem] fa-solid fa-money-bill-trend-up text-btnPrimary"></i>
             <div class="flex flex-col text-slate-600">
               <h3 class="text-md">Jumlah Saldo Barang</h3>
-              <p class="mt-1 text-[1rem] font-medium text-btnPrimary">Rp 13.000.000,00</p>
-              <h4 class="mt-1 text-xs text-slate-400">Sejak bulan lalu</h4>
+              <p class="mt-1 text-[1rem] font-medium text-btnPrimary">
+                {{ jumlahSaldoBarang === null ? 'loading. . .' : formatRupiah(jumlahSaldoBarang) }}
+              </p>
+              <h4 class="mt-1 text-xs text-slate-400">Terhitung Sejak {{ formatCurrentDate }}</h4>
             </div>
           </div>
         </div>

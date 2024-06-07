@@ -30,7 +30,7 @@ onUnmounted(() => {
     <h1 class="pl-2 text-xl text-slate-600">Dashboard</h1>
     <div class="flex items-center justify-center gap-4">
       <h2>Super Admin</h2>
-      <img src="/public/assets/images/user.png" class="w-10 h-10 rounded-full" />
+      <img src="/assets/images/user.png" class="w-10 h-10 rounded-full" />
     </div>
   </nav>
 </template>
