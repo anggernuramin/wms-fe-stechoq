@@ -1,8 +1,10 @@
 <script setup>
 import { useStore } from 'vuex'
 import { ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import Auth from '../services/AuthenticationService.js'
 
+const router = useRouter()
 const location = useRoute()
 const store = useStore()
 const isOpenLaporan = ref(false)
@@ -11,6 +13,11 @@ const isOpenProduct = ref(false)
 const toggleSidebar = () => {
   isOpenLaporan.value = false
   store.commit('toogleSidebar')
+}
+
+const handleLogout = () => {
+  Auth.logout()
+  router.push('/login')
 }
 
 const openOptionLaporan = () => {
@@ -150,15 +157,15 @@ const openOptionProduct = () => {
       </h3>
 
       <li class="w-full mb-3">
-        <router-link
-          to="/barang-masuk"
+        <button
           class="flex items-center justify-start w-full gap-3 p-2 px-3 rounded-md bg-secondary"
+          @click="handleLogout"
         >
           <i class="text-TxtPrimary-700 fas fa-sign-out"></i>
           <h2 class="text-sm font-medium text-TxtPrimary-700" :class="{ hidden: !store.state.isSidebarOpen }">
             Logout
           </h2>
-        </router-link>
+        </button>
       </li>
     </ul>
 

@@ -64,6 +64,7 @@ onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
 })
 
+const tokem = localStorage.getItem('token')
 const submitAddProduct = async () => {
   if (isLoading.value || isSubmit.value) return // menghentikan mengirim form lebih dari 1 kali
   const result = await v$.value.$validate()
@@ -79,7 +80,10 @@ const submitAddProduct = async () => {
           Harga_Jual: state.price
         },
         {
-          headers: { 'Content-Type': 'application/json' }
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${tokem}`
+          }
         }
       )
       isSubmit.value = true

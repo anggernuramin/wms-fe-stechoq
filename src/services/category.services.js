@@ -1,11 +1,13 @@
 import axios from 'axios'
 
+const token = localStorage.getItem('token')
+
 export const getAllCategory = async () => {
   try {
     const res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/category`, {
       headers: {
         'Cache-Control': 'no-cache',
-        Authorization: `Bearer ${import.meta.env.VITE_VUE_TOKEN}`
+        Authorization: `Bearer ${token}`
       }
     })
     return res.data.data
@@ -21,7 +23,7 @@ export const pagedCategory = async (id, limit, teks) => {
       {
         headers: {
           'Cache-Control': 'no-cache',
-          Authorization: `Bearer ${import.meta.env.VITE_VUE_TOKEN}`
+          Authorization: `Bearer ${token}`
         }
       }
     )
@@ -36,7 +38,7 @@ export const getCategoryById = async (id) => {
     const res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/category/${id}`, {
       headers: {
         'Cache-Control': 'no-cache',
-        Authorization: `Bearer ${import.meta.env.VITE_VUE_TOKEN}`
+        Authorization: `Bearer ${token}`
       }
     })
     console.log('🚀 ~ getCategoryById ~ res:', res.datadata)
@@ -51,7 +53,7 @@ export const deleteCategory = async (id) => {
     const res = await axios.delete(`${import.meta.env.VITE_VUE_APP_BASE_URL}/category/${id}`, {
       headers: {
         'Cache-Control': 'no-cache',
-        Authorization: `Bearer ${import.meta.env.VITE_VUE_TOKEN}`
+        Authorization: `Bearer ${token}`
       }
     })
     console.log('🚀 ~ deleteCategory ~ res:', res)

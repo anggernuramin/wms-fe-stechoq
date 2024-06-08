@@ -45,6 +45,7 @@ const rules = {
 //   selectProduct(name)
 // }
 
+const tokem = localStorage.getItem('token')
 const v$ = useVuelidate(rules, state)
 const router = useRouter()
 const submitAddout = async () => {
@@ -63,7 +64,10 @@ const submitAddout = async () => {
           quantity: state.qty
         },
         {
-          headers: { 'Content-Type': 'application/json' }
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${tokem}`
+          }
         }
       )
       console.log('POST request successful:', res)

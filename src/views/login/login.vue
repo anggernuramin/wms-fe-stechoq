@@ -59,53 +59,49 @@
   </section>
 </template>
 
-<script>
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import AuthenticationService from '../../services/AuthenticationService'
-import axios from 'axios'
 
-export default {
-  name: 'BackgroundSection',
-  data() {
-    return {
-      username: '',
-      password: '',
-      error: null
-    }
-  },
-  methods: {
-    async login() {
-      try {
-        const response = await AuthenticationService.login({
-          username: this.username,
-          password: this.password
-        })
+const username = ref('')
+const password = ref('')
+const error = ref(null)
 
-        console.log('🚀 ~ login ~ response:', response)
+// Get router instance
+const router = useRouter()
 
-        localStorage.setItem('token', response?.data?.token)
-        this.$router.push('/')
+const login = async () => {
+  try {
+    const response = await AuthenticationService.login({
+      username: username.value,
+      password: password.value
+    })
+    console.log('🚀 ~ login ~ response:', response)
+    localStorage.setItem('token', response.data.token)
+    localStorage.setItem('refreshToken', response.data.refreshToken)
+    router.push('/')
 
-        // const token = response.data.token
-        // const expiresIn = response.data.expiresIn
+    // const token = response.data.token
+    // const expiresIn = response.data.expiresIn
 
-        // const expirationDate = new Date().getTime() + expiresIn * 1000
+    // const expirationDate = new Date().getTime() + expiresIn * 1000
 
-        // localStorage.setItem('tokenExpiration', expirationDate)
-      } catch (err) {
-        console.log(err)
-        if (err.response && err.response.data) {
-          this.error = err.response.data.error
-          this.$router.push('/login')
-        } else {
-          this.error = 'Server error.'
-        }
-      }
-    },
-    showRegister() {
-      // redirect to register page
-      this.$router.push('/register')
+    // localStorage.setItem('tokenExpiration', expirationDate)
+  } catch (err) {
+    console.log(err)
+    if (err.response && err.response.data) {
+      error.value = err.response.data.error
+      router.push('/login')
+    } else {
+      error.value = 'Server error.'
     }
   }
+}
+
+// Define the showRegister method
+const showRegister = () => {
+  router.push('/register')
 }
 </script>
 
