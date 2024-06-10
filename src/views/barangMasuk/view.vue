@@ -177,9 +177,7 @@ const sortingBarangMasuk = (name) => {
               </tr>
             </template>
             <div v-else class="block w-full pl-4 my-5 text-lg font-normal text-left text-red-600">
-              <p class="block w-full">
-                Data dengan Kategori <span class="font-bold">{{ selectCategory }}</span> Tidak ada
-              </p>
+              <p class="block w-full">Data Barang Masuk Kosong</p>
             </div>
           </tbody>
         </table>

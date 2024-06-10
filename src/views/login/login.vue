@@ -1,11 +1,13 @@
 <template>
   <section
-    class="flex items-center justify-center w-full min-h-screen bg-repeat bg-cover shadow-md bg-custom-bg bg-[url('/assets/images/bg-login.jpg')]"
+    class="flex items-center justify-center w-full min-h-screen bg-repeat bg-cover shadow-md bg-custom-bg bg-[url('/assets/images/bg-person-login.jpg')]"
   >
     <div class="flex items-center justify-center w-full min-h-screen bg-slate-700 bg-opacity-70">
-      <div class="flex flex-col justify-center flex-1 max-w-sm min-h-full p-5 px-6 py-12 bg-white rounded-sm lg:px-8">
+      <div
+        class="flex flex-col justify-center flex-1 max-w-sm min-h-full p-5 px-6 py-12 bg-opacity-75 rounded-md bg-slate-50 lg:px-8"
+      >
         <h1 class="mb-2 text-4xl font-medium leading-3 tracking-tight text-center text-slate-700">SIGN IN</h1>
-        <h2 class="mt-3 text-center text-md text-slate-500">Sign in with your email and password</h2>
+        <p class="mt-3 text-center text-md text-slate-500">Sign in with your email and password</p>
 
         <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-sm">
           <div>
@@ -40,7 +42,10 @@
             />
           </div>
 
-          <div class="error" v-html="error"></div>
+          <div class="pt-2 error" v-if="error">
+            {{ error }}
+          </div>
+
           <br />
           <button
             type="submit"
@@ -51,7 +56,7 @@
           </button>
           <p class="pt-5 text-sm text-slate-600">
             Don't have an account?
-            <a href="#" @click="showRegister"> <span class="text-btnPrimary">Register here</span> </a>
+            <router-link to="/register"> <span class="text-btnPrimary">Register</span> </router-link>
           </p>
         </div>
       </div>
@@ -77,31 +82,18 @@ const login = async () => {
       username: username.value,
       password: password.value
     })
-    console.log('🚀 ~ login ~ response:', response)
     localStorage.setItem('token', response.data.token)
-    localStorage.setItem('refreshToken', response.data.refreshToken)
     router.push('/')
-
-    // const token = response.data.token
-    // const expiresIn = response.data.expiresIn
-
-    // const expirationDate = new Date().getTime() + expiresIn * 1000
-
-    // localStorage.setItem('tokenExpiration', expirationDate)
   } catch (err) {
-    console.log(err)
-    if (err.response && err.response.data) {
-      error.value = err.response.data.error
+    console.log(err.response.data?.msg)
+    error.value = err.response.data?.msg
+    if (err.response || err.response.data) {
+      error.value = err.response.data.msg
       router.push('/login')
     } else {
       error.value = 'Server error.'
     }
   }
-}
-
-// Define the showRegister method
-const showRegister = () => {
-  router.push('/register')
 }
 </script>
 

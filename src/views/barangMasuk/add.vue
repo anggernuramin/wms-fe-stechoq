@@ -10,6 +10,7 @@ import axios from 'axios'
 import { capitalizeFirstLetter } from '../../libs/capitalizeFirstLetter.js'
 import { useToast } from 'vue-toast-notification'
 import 'vue-toast-notification/dist/theme-sugar.css'
+import { headerConfig } from '../../libs/headerConfig.js'
 
 const toast = useToast()
 
@@ -92,9 +93,7 @@ const submitAddBarangMasuk = async () => {
           tanggal: state.tanggal,
           quantity: state.quantity
         },
-        {
-          headers: { 'Content-Type': 'application/json' }
-        }
+        headerConfig
       )
       isSubmit.value = true
       emits('dataAdded')
@@ -215,9 +214,9 @@ watch(displayAddButton, (displayCurrentButton) => {
               >Keterangan<span class="text-lg text-red-700 ps-2">*</span></label
             >
             <textarea
-              placeholder="Keterangan Barang Masuk"
               id="price"
               v-model="state.keterangan"
+              placeholder="Keterangan Barang Masuk"
               type="text"
               class="w-full px-3 py-[6px] border rounded-md bg-secondary outline-none"
               name="price"

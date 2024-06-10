@@ -8,6 +8,7 @@ import axios from 'axios'
 import { capitalizeFirstLetter } from '../../libs/capitalizeFirstLetter.js'
 import { useToast } from 'vue-toast-notification'
 import 'vue-toast-notification/dist/theme-sugar.css'
+import { headerConfig } from '../../libs/headerConfig.js'
 
 const toast = useToast()
 const barangMasuk = ref({})
@@ -61,9 +62,7 @@ const submitEditBarangMasuk = async () => {
           keterangan: state.keterangan,
           quantity: state.quantity
         },
-        {
-          headers: { 'Content-Type': 'application/json' }
-        }
+        headerConfig
       )
       console.log('🚀 ~ submitEditBarangMasuk ~ res:', res)
       isSubmit.value = true

@@ -10,20 +10,12 @@ export default {
   dashboard() {
     return Api().get('/dashboard')
   },
+
+  getToken(token) {
+    return Api().post('/token', token)
+  },
+
   logout() {
     localStorage.removeItem('token')
-    localStorage.removeItem('refreshToken')
-  },
-  isLoggedIn() {
-    const token = localStorage.getItem('token')
-    const expirationDate = localStorage.getItem('refreshToken')
-    const now = new Date().getTime()
-
-    return token && expirationDate && now < expirationDate
   }
 }
-
-// AuthenticationService.register({
-//   email: 'testing@gmail.com',
-//   password: '123456'
-// })

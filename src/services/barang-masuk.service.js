@@ -1,15 +1,5 @@
 import axios from 'axios'
-import { ref } from 'vue'
-
-const token = localStorage.getItem('token')
-
-const headerConfig = {
-  headers: {
-    'Cache-Control': 'no-cache',
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`
-  }
-}
+import { headerConfig } from '../libs/headerConfig'
 
 export const getBarangMasukById = async (id) => {
   try {
@@ -22,7 +12,7 @@ export const getBarangMasukById = async (id) => {
 
 export const getAllBarangMasuk = async (page) => {
   try {
-    let res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/searchBM?page=${page}&limit=10 `)
+    let res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/searchBM?page=${page}&limit=10 `, headerConfig)
     return res.data?.result
   } catch (err) {
     return err.message
@@ -30,13 +20,12 @@ export const getAllBarangMasuk = async (page) => {
 }
 
 export const UpdateBarangMasuk = async (payload, id) => {
-  console.log('🚀 ~ UpdateBarangMasuk ~ payload:', JSON.stringify(payload))
   try {
-    await axios.patch(`${import.meta.env.VITE_VUE_APP_BASE_URL}/barangMasuk/update/${id} `, JSON.stringify(payload), {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
+    await axios.patch(
+      `${import.meta.env.VITE_VUE_APP_BASE_URL}/barangMasuk/update/${id} `,
+      JSON.stringify(payload),
+      headerConfig
+    )
   } catch (err) {
     return err.message
   }
@@ -44,9 +33,7 @@ export const UpdateBarangMasuk = async (payload, id) => {
 
 export const deleteBarangMasuk = async (id) => {
   try {
-    let res = await axios.delete(`${import.meta.env.VITE_VUE_APP_BASE_URL}/barangMasuk/delete/${id} `, {
-      headerConfig
-    })
+    let res = await axios.delete(`${import.meta.env.VITE_VUE_APP_BASE_URL}/barangMasuk/delete/${id} `, headerConfig)
     return res
   } catch (err) {
     return err.message
@@ -57,9 +44,8 @@ export const searchBarangMasuk = async (query) => {
   try {
     let res = await axios.get(
       `${import.meta.env.VITE_VUE_APP_BASE_URL}/searchBM?search_query=${query}&page=0&limit=10`,
-      {
-        headerConfig
-      }
+
+      headerConfig
     )
     return res.data.result
   } catch (err) {

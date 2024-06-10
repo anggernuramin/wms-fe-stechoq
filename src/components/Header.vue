@@ -1,9 +1,11 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useStore } from 'vuex'
 
 const store = useStore()
 const isScrolled = ref(false)
+const user = computed(() => store.getters.getUser)
+console.log('🚀 ~ user:', user)
 
 const handleScroll = () => {
   isScrolled.value = window.scrollY > 20
@@ -27,9 +29,12 @@ onUnmounted(() => {
       marginRight: store.state.isSidebarOpen ? '1.2rem' : '1.2rem'
     }"
   >
-    <h1 class="pl-2 text-xl text-slate-600">Dashboard</h1>
+    <div class="flex flex-col gap-1 pl-2">
+      <h1 class="text-2xl font-medium text-slate-800">Selamat Datang, {{ user?.username }}</h1>
+      <p class="text-xs text-slate-400">Manage incoming and outgoing goods and track inventory levels.</p>
+    </div>
     <div class="flex items-center justify-center gap-4">
-      <h2>Super Admin</h2>
+      <h2>{{ user?.username }}</h2>
       <img src="/assets/images/user.png" class="w-10 h-10 rounded-full" />
     </div>
   </nav>

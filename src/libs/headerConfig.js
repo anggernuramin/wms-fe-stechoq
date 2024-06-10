@@ -1,6 +1,7 @@
+const token = localStorage.getItem('token')
 export const headerConfig = {
   headers: {
-    Authorization: `Bearer ${import.meta.env.VITE_VUE_TOKEN}`,
+    Authorization: `Bearer ${token}`,
     'Cache-Control': 'no-cache',
     'Content-Type': 'application/json'
   }

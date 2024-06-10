@@ -1,12 +1,40 @@
 <script setup>
-import Sidebar from '../components/Sidebar.vue'
 import { ref, onMounted } from 'vue'
 import Table from '../components/Table.vue'
 import Slider from 'primevue/slider'
-import { getAllJumlahStockBarang, getAllJumlahSaldoBarang } from '../services/dashboard-service'
+import { getAllJumlahStockBarang, getAllJumlahSaldoBarang, getAllStockReport } from '../services/dashboard-service'
 import { formatAngka } from '../libs/formatAngka.js'
 import { formatCurrentDate } from '../libs/formatCurrentDate.js'
 import { formatRupiah } from '../libs/formatRupiah.js'
+import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
+// User Login
+
+const router = useRouter()
+const store = useStore()
+
+// onMounted(async () => {
+//   const token = localStorage.getItem('token')
+//   if (token) {
+//     try {
+//       const response = await AuthenticationService.token({
+//         token: token
+//       })
+//       console.log('🚀 ~ onMounted ~ response:', response)
+//       // if (!response?.data) {
+//       //   localStorage.removeItem('token')
+//       //   router.push('/login')
+//       //   return
+//       // }
+//       const data = await response?.data
+//       store.dispatch('setUser', data)
+//       return
+//     } catch (error) {
+//       // router.push('/login')
+//       return
+//     }
+//   }
+// })
 
 const jumlahStockBarang = ref(null)
 const jumlahSaldoBarang = ref(null)
@@ -15,7 +43,6 @@ const labelsCategory = ref([])
 const stocksCategory = ref([])
 const stocksBarangMasuk = ref([])
 const stocksBarangKeluar = ref([])
-const topProducts = ref([])
 const topBarangMasuk = ref([])
 const topBarangKeluar = ref([])
 
@@ -76,14 +103,14 @@ const chartSeriesPie = ref([44, 55, 13, 43, 22])
 const barangMasukData = ref([
   {
     name: 'Barang Masuk',
-    data: [30, 40, 35, 50, 49, 60, 70, 91, 125, 140, 160, 180]
+    data: stocksBarangMasuk?.value
   }
 ])
 
 const barangKeluarData = ref([
   {
     name: 'Barang Keluar',
-    data: [15, 25, 20, 35, 29, 40, 55, 65, 85, 95, 100, 110]
+    data: stocksBarangKeluar?.value
   }
 ])
 
@@ -92,20 +119,7 @@ const chartOptions = ref({
     type: 'bar'
   },
   xaxis: {
-    categories: [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December'
-    ],
+    categories: optionMonths.value,
     labels: {
       style: {
         fontSize: '14px',
@@ -144,12 +158,15 @@ const showBarangKeluar = () => {
   }
 }
 
-onMounted(() => {
-  const token = localStorage.getItem('token')
-  if (token) {
-  } else {
-  }
+onMounted(async () => {
+  const dataStockReport = await getAllStockReport()
+  dataStockReport.map((item) => {
+    optionMonths.value.push(item.month)
+    stocksBarangMasuk.value.push(item.totalMasuk)
+    stocksBarangKeluar.value.push(item.totalKeluar)
+  })
 })
+
 onMounted(async () => {
   jumlahStockBarang.value = await getAllJumlahStockBarang()
   jumlahSaldoBarang.value = await getAllJumlahSaldoBarang()
