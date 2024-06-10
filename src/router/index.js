@@ -16,13 +16,13 @@ const routes = [
     path: '/',
     name: 'Dashboard',
     component: () => import('../layouts/Dashboard.vue'),
-    meta: { requiresAuth: true }, // Otentikasi diperlukan untuk Dashboard
+    meta: { requiresAuth: true },
     children: [
       {
         path: 'products',
         name: 'products',
         component: () => import('../views/product/view.vue'),
-        meta: { requiresAuth: true }, // Otentikasi diperlukan untuk products
+        meta: { requiresAuth: true },
         children: [
           {
             path: 'add',

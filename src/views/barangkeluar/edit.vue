@@ -1,17 +1,20 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
-import { ref, onMounted, defineEmits } from 'vue'
+import { ref, onMounted, defineEmits, nextTick } from 'vue'
 import { UpdateBarangkeluar, GetBarangKeluarID, GetBarangKeluar } from '../../services/barangkeluar.services.js'
 import html2pdf from 'html2pdf.js'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 
+// Define reactive variables and route handlers
 const route = useRoute()
 const data = ref()
 const router = useRouter()
 const id = ref(route.params.id)
 const baseUrl = import.meta.env.VITE_VUE_APP_BASE_URL
 const emits = defineEmits(['dataAdded'])
+const visible = ref(false)
 
+// Function to fetch data based on ID
 const TakeMe = async () => {
   try {
     const response = await GetBarangKeluarID(id.value)
@@ -22,6 +25,7 @@ const TakeMe = async () => {
   }
 }
 
+// Function to handle update
 const handleUpdate = async () => {
   const res = await UpdateBarangkeluar(id.value)
   console.log('🚀 ~ handleUpdate ~ res:', res)
@@ -39,13 +43,17 @@ onMounted(async () => {
   console.log('TakeMe called')
 })
 
+// Function to handle cancel action
 const handleCancel = () => {
   emits('dataAdded')
   router.push('/barangkeluar')
 }
 
-const exportToPDF = () => {
-  const element = document.getElementById('qrcode')
+// Function to export the content to PDF
+const exportToPDF = async () => {
+  visible.value = false // Set table to visible
+
+  const element = document.getElementById('pdf_export')
   if (element) {
     html2pdf(element, {
       margin: 1,
@@ -57,6 +65,7 @@ const exportToPDF = () => {
   } else {
     console.error('Element with ID "qrcode" not found!')
   }
+  visible.value = true
 }
 </script>
 
@@ -71,9 +80,22 @@ const exportToPDF = () => {
         <p v-else>Loading . . .</p>
 
         <!-- QR Code Component -->
-        <div id="qrcode" class="flex flex-col items-center my-4">
+        <div id="pdf_export" class="flex flex-col items-center my-4">
+          <div v-show="visible" class="hero">
+            <div class="hero-content text-center">
+              <div class="max-w-md">
+                <h1 class="text-5xl font-bold">Surat Jalan Fortune Code</h1>
+                <p class="py-3 text-xs text-left">- from team 1 fortune made with ❤️</p>
+              </div>
+            </div>
+          </div>
           <vue-qrcode :value="`${baseUrl}/barangKeluar/update/${id}`" size="200"></vue-qrcode>
-          <div class="overflow-x-auto">
+          <br />
+          <p v-show="visible" class="hero-content py-6">
+            surat jalan ini ditunjukan sebagai bukti jalan yang di gunakan untuk sebagai bukti jalan dan bukti
+            pengiriman, scan barcode jika sudah selesai dalam mengirim barang ini lalu serahkan barang nya
+          </p>
+          <div v-show="visible" class="overflow-x-auto">
             <table class="table">
               <thead>
                 <tr>
@@ -103,8 +125,7 @@ const exportToPDF = () => {
 
         <div class="flex items-center justify-end gap-3 p-5 mt-5 border-t">
           <router-link to="/barangkeluar" class="btn-md-error" @click="handleCancel">Batal</router-link>
-          <!-- <button type="submit" class="btn-md-success">Update</button> -->
-          <button type="button" class="btn btn-accent" @click="exportToPDF">Export to PDF</button>
+          <button type="button" class="btn-md-success" @click="exportToPDF">Export to PDF</button>
         </div>
       </form>
     </div>
