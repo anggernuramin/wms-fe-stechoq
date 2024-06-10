@@ -1,16 +1,21 @@
 <script setup>
-import { useRoute } from 'vue-router'
-import { onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { onMounted, ref, nextTick } from 'vue'
 import Breadcrums from '../../components/Breadcrums.vue'
 import { getAllProduct, pagedProduct } from '../../services/Product.services'
+import html2pdf from 'html2pdf.js'
 
 const location = useRoute()
+
+const router = useRouter()
 const data = ref([])
 const errorMessage = ref('')
 const isLoading = ref(false)
 const currentPage = ref(1)
 const totalPages = ref(10)
 const search = ref('')
+const visible = ref(false)
+const invis = ref(true)
 
 const fetchData = async () => {
   try {
@@ -47,6 +52,28 @@ const updateSearch = (event) => {
   console.log('MASUK PAK EKO')
   fetchData()
 }
+
+const exportToPDF = async () => {
+  visible.value = true
+  invis.value = false
+  await nextTick()
+  const element = document.getElementById('pdf_export')
+  if (element) {
+    html2pdf(element, {
+      margin: 4,
+      filename: 'Semua_Produk_Fortune.pdf'
+    }).then(() => {
+      console.log('🚀 berhasil')
+      visible.value = false
+      invis.value = true
+    })
+  } else {
+    console.error('Element with ID "pdf_export" not found!')
+    visible.value = false
+    invis.value = true
+  }
+  fetchData()
+}
 </script>
 
 <template>
@@ -56,7 +83,7 @@ const updateSearch = (event) => {
         <Breadcrums :path="[{ name: 'Dashboard', url: '/' }]" :pathActive="{ name: 'Product', url: location?.name }" />
 
         <div class="flex gap-3">
-          <button class="flex items-center justify-center gap-2 btn-sm-default">
+          <button class="flex items-center justify-center gap-2 btn-sm-default" @click="exportToPDF">
             <i class="fas fa-filter"></i>Export
           </button>
           <router-link to="/products/add" class="flex items-center justify-center gap-2 bg-red-400 btn-sm-success">
@@ -95,40 +122,52 @@ const updateSearch = (event) => {
         </div>
       </div>
       <template v-if="isLoading"> <h1>Loading . . .</h1></template>
-      <table class="table rounded-sm">
-        <!-- head -->
-        <thead class="bg-zinc-50">
-          <tr class="text-sm font-light text-slate-700 border-b-slate-100">
-            <th class="font-medium">#</th>
-            <th class="font-medium">Id. Product</th>
-            <th class="font-medium">Product</th>
-            <th class="font-medium">Category</th>
-            <th class="font-medium">Price</th>
-            <th class="font-medium">QTY</th>
-            <th class="font-medium">Action</th>
-          </tr>
-        </thead>
-        <tbody class="justify-between text-sm font-light text-slate-500">
-          <template v-if="data.length">
-            <tr v-for="(item, index) in data" :key="index" class="font-normal border-b-slate-100">
-              <td>{{ index + 1 }}</td>
-              <td>{{ item.id_produk }}</td>
-              <td>{{ item.Nama }}</td>
-              <td>{{ item.Kategori }}</td>
-              <td>{{ item.Harga_Jual }}</td>
-              <td>{{ item.Quantity }}</td>
-              <td class="flex gap-3">
-                <router-link :to="'/products/edit/' + item?.id_produk">
-                  <i class="text-[14px] text-warning fa fa-pencil" aria-hidden="true"></i>
-                </router-link>
-                <router-link :to="'/products/delete/' + item?.id_produk">
-                  <i class="text-[14px] text-error fa fa-trash" aria-hidden="true"></i>
-                </router-link>
-              </td>
+
+      <div id="pdf_export">
+        <div v-show="visible" class="hero">
+          <div class="hero-content text-center">
+            <div class="max-w-md">
+              <h1 class="text-4xl font-bold">SEMUA JENIS PRODUCT FORTUNE</h1>
+              <p class="py-3 text-xs text-left">- from team 1 fortune made with ❤️</p>
+            </div>
+          </div>
+        </div>
+
+        <table class="table rounded-sm">
+          <!-- head -->
+          <thead class="bg-zinc-50">
+            <tr class="text-sm font-light text-slate-700 border-b-slate-100">
+              <th class="font-medium">#</th>
+              <th class="font-medium">Id. Product</th>
+              <th class="font-medium">Product</th>
+              <th class="font-medium">Category</th>
+              <th class="font-medium">Price</th>
+              <th class="font-medium">QTY</th>
+              <th v-show="invis" class="font-medium">Action</th>
             </tr>
-          </template>
-        </tbody>
-      </table>
+          </thead>
+          <tbody class="justify-between text-sm font-light text-slate-500">
+            <template v-if="data.length">
+              <tr v-for="(item, index) in data" :key="index" class="font-normal border-b-slate-100">
+                <td>{{ index + 1 }}</td>
+                <td>{{ item.id_produk }}</td>
+                <td>{{ item.Nama }}</td>
+                <td>{{ item.Kategori }}</td>
+                <td>{{ item.Harga_Jual }}</td>
+                <td>{{ item.Quantity }}</td>
+                <td v-show="invis" class="flex gap-3">
+                  <router-link :to="'/products/edit/' + item?.id_produk">
+                    <i class="text-[14px] text-warning fa fa-pencil" aria-hidden="true"></i>
+                  </router-link>
+                  <router-link :to="'/products/delete/' + item?.id_produk">
+                    <i class="text-[14px] text-error fa fa-trash" aria-hidden="true"></i>
+                  </router-link>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
       <template v-if="errorMessage">
         {{ errorMessage }}
       </template>

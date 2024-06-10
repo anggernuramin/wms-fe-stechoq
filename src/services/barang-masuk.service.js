@@ -22,7 +22,7 @@ export const getBarangMasukById = async (id) => {
 
 export const getAllBarangMasuk = async (page) => {
   try {
-    let res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/searchBM?page=${page}&limit=10 `)
+    let res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/searchBM?page=${page}&limit=10 `, headerConfig)
     return res.data?.result
   } catch (err) {
     return err.message
@@ -32,11 +32,11 @@ export const getAllBarangMasuk = async (page) => {
 export const UpdateBarangMasuk = async (payload, id) => {
   console.log('🚀 ~ UpdateBarangMasuk ~ payload:', JSON.stringify(payload))
   try {
-    await axios.patch(`${import.meta.env.VITE_VUE_APP_BASE_URL}/barangMasuk/update/${id} `, JSON.stringify(payload), {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
+    await axios.patch(
+      `${import.meta.env.VITE_VUE_APP_BASE_URL}/barangMasuk/update/${id} `,
+      JSON.stringify(payload),
+      headerConfig
+    )
   } catch (err) {
     return err.message
   }
