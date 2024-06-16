@@ -15,7 +15,7 @@ export const getAllCategory = async () => {
 export const pagedCategory = async (query, page, limit) => {
   try {
     const res = await axios.get(
-      `${import.meta.env.VITE_VUE_APP_BASE_URL}/searchCategory?search_query=${query}&page=${page}&limit=${limit}`,
+      `${import.meta.env.VITE_VUE_APP_BASE_URL}/searchCategory?search=${query}&page=${page}&limit=${limit}`,
       headerConfig
     )
     return res.data

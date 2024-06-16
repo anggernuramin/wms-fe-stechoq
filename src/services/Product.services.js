@@ -14,7 +14,7 @@ export const getAllProduct = async () => {
 export const pagedProduct = async (query, page, limit) => {
   try {
     const res = await axios.get(
-      `${import.meta.env.VITE_VUE_APP_BASE_URL}/searchProduk?search_query=${query}&page=${page}&limit=${limit}`,
+      `${import.meta.env.VITE_VUE_APP_BASE_URL}/searchProduk?search=${query}&page=${page}&limit=${limit}`,
 
       headerConfig
     )

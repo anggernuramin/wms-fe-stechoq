@@ -20,8 +20,10 @@ onMounted(async () => {
     isLoading.value = true
     const res = await getAllBarangMasuk(currentPage.value, totalLimit.value)
     category.value = await getAllCategory()
-    totalPage.value = res.totalPage
-    barangMasuk.value = res.result
+    currentPage.value = res.currentPage
+    totalPage.value = res.totalPages
+    barangMasuk.value = res.data
+    resultBarangMasuk.value = res.data
     isLoading.value = false
   } catch (error) {
     toast.error(error)
@@ -46,8 +48,8 @@ const fetchData = async () => {
   try {
     isLoading.value = true
     const res = await getAllBarangMasuk(currentPage.value, totalLimit.value)
-    barangMasuk.value = res.result
-    resultBarangMasuk.value = res.result
+    barangMasuk.value = res.data
+    resultBarangMasuk.value = res.data
     isLoading.value = false
   } catch (error) {
     toast.error(error)
@@ -66,7 +68,6 @@ const handleSearchBarangMasuk = async (e) => {
 }
 
 const sortingBarangMasuk = (name) => {
-  console.log('🚀 ~ sortingBarangMasuk ~ name:', name)
   selectCategory.value = name
   if (!name) {
     return (resultBarangMasuk.value = barangMasuk.value)

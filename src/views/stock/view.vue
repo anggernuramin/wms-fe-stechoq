@@ -22,7 +22,6 @@ const fetchData = async () => {
     data.value = response?.data
   } catch (error) {
     isLoading.value = false
-    console.log(error.message)
   }
 }
 

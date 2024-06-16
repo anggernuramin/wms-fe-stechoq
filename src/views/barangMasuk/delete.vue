@@ -16,9 +16,7 @@ onMounted(async () => {
   try {
     const barangMasuk = await getBarangMasukById(id.value)
     data.value = barangMasuk.Nama_Produk
-  } catch (error) {
-    console.log(error.message)
-  }
+  } catch (error) {}
 })
 const handleDelete = async () => {
   try {

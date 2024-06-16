@@ -15,7 +15,6 @@ export default createStore({
       state.isSidebarOpen = !state.isSidebarOpen
     },
     setUser(state, payload) {
-      console.log('🚀 ~ setUser ~ payload:', payload)
       state.user = payload
     }
   }

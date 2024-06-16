@@ -20,10 +20,7 @@ const TakeMe = async () => {
   try {
     const response = await GetBarangKeluarID(id.value)
     data.value = response
-    console.log('Data received:', data.value)
-  } catch (error) {
-    console.log(error.message)
-  }
+  } catch (error) {}
 }
 
 // Function to handle update
@@ -43,7 +40,6 @@ onMounted(async () => {
     await handleUpdate()
   }
   await TakeMe()
-  console.log('TakeMe called')
 })
 
 // Function to handle cancel action
@@ -62,11 +58,9 @@ const exportToPDF = async () => {
       margin: 1,
       filename: 'Bukti_Surat_Jalan.pdf'
     })
-    console.log('🚀 berhasil')
     emits('dataAdded')
     router.push('/barangkeluar')
   } else {
-    console.error('Element with ID "qrcode" not found!')
   }
   visible.value = true
 }

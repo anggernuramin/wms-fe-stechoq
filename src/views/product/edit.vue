@@ -42,9 +42,7 @@ onMounted(async () => {
     state.product = response?.Nama
     state.category = response?.Kategori
     state.price = response?.Harga_Jual
-  } catch (error) {
-    console.log(error.message)
-  }
+  } catch (error) {}
 })
 
 const handleClickOutside = (event) => {
@@ -112,7 +110,6 @@ const setNameProducts = () => {
 }
 const searchNameProducts = (e) => {
   const searchTerm = e.trim()
-  console.log('🚀 ~ searchNameProducts ~ searchTerm:', searchTerm)
   if (!searchTerm) {
     displayAddButton.value = false
     listProducts.value = product

@@ -26,7 +26,6 @@ const handleGetToken = async () => {
       router.push('/login')
     }
   } else {
-    console.log('Token not found in localStorage')
     router.push('/login')
   }
 }

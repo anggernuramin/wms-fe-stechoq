@@ -24,10 +24,10 @@ onMounted(async () => {
   isLoading.value = true
   try {
     const res = await searchBarangMasuk(query.value, currentPage.value, totalLimit.value)
-    console.log('🚀 ~ onMounted ~ res:', res)
-    totalPage.value = res.totalPage
-    barangMasuk.value = res.result
-    resultBarangMasuk.value = res.result
+    totalPage.value = res.totalPages
+    currentPage.value = res.currentPage
+    barangMasuk.value = res.data
+    resultBarangMasuk.value = res.data
     isLoading.value = false
   } catch (error) {
     toast.error(error)
@@ -39,9 +39,9 @@ const fetchData = async () => {
   try {
     isLoading.value = true
     const res = await searchBarangMasuk(query.value, currentPage.value, totalLimit.value)
-    totalPage.value = res.totalPage
-    barangMasuk.value = res.result
-    resultBarangMasuk.value = res.result
+    totalPage.value = res.totalPages
+    barangMasuk.value = res.data
+    resultBarangMasuk.value = res.data
     isLoading.value = false
   } catch (error) {
     toast.error(error)
@@ -57,11 +57,11 @@ const handleSearchBarangMasuk = async (e) => {
   e.preventDefault()
   const queries = query.value
   router.push({ path: '/barang-masuk/search', query: { queries } })
-  const res = await searchBarangMasuk(queries)
-  totalPage.value = res.totalPage
-  barangMasuk.value = res.result
-  barangMasuk.value = res.result
-  resultBarangMasuk.value = res.result
+  const res = await searchBarangMasuk(queries, currentPage.value, totalLimit.value)
+
+  totalPage.value = res.totalPages
+  barangMasuk.value = res.data
+  resultBarangMasuk.value = res.data
 }
 </script>
 

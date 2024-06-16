@@ -14,9 +14,7 @@ onMounted(async () => {
   try {
     const category = await getProductById(id.value)
     data.value = category
-  } catch (error) {
-    console.log(error.message)
-  }
+  } catch (error) {}
 })
 const handleDelete = async () => {
   const res = await deleteProduct(id.value)

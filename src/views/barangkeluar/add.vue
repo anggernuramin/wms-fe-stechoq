@@ -21,7 +21,6 @@ let product = []
 
 onMounted(async () => {
   const products = await getAllProduct()
-  console.log('🚀 ~ onMounted ~ products:', products)
   return (product = products)
 })
 
@@ -104,8 +103,6 @@ onBeforeUnmount(() => {
 
 const setNameProducts = async () => {
   if (!state.product) {
-    // const product = await getAllProduct()
-    // console.log('🚀 ~ setNameProducts ~ product:', product)
     return (listProducts.value = product)
   }
 }

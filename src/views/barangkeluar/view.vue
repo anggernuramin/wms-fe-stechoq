@@ -23,7 +23,6 @@ const fetchData = async () => {
     return (data.value = response.data)
   } catch (error) {
     isLoading.value = false
-    console.log(error.message)
   }
 }
 
@@ -42,7 +41,6 @@ const nextPage = () => {
 }
 
 onMounted(() => {
-  console.log('test')
   fetchData()
 })
 

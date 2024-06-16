@@ -25,7 +25,7 @@ onMounted(async () => {
     products.value = data.map((item, index) => ({
       No: index + 1,
       Nama_Produk: item.Nama_Produk,
-      Kategori: item.Kategori,
+      Kategori: item.Kategori ? item.Kategori : '-',
       Quantity_Keluar: item.Quantity_Keluar
     }))
   }

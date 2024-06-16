@@ -13,10 +13,7 @@ onMounted(async () => {
   try {
     const category = await getCategoryById(id.value)
     data.value = category
-    console.log('🚀 ~ onMounted ~ category:', data.value)
-  } catch (error) {
-    console.log(error.message)
-  }
+  } catch (error) {}
 })
 const handleDelete = async () => {
   const res = await deleteCategory(id.value)

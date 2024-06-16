@@ -64,7 +64,6 @@ const submitEditBarangMasuk = async () => {
         },
         headerConfig
       )
-      console.log('🚀 ~ submitEditBarangMasuk ~ res:', res)
       isSubmit.value = true
       emits('dataAdded')
       router.push('/barang-masuk')
@@ -87,7 +86,7 @@ const submitEditBarangMasuk = async () => {
   <section
     class="absolute top-0 bottom-0 left-0 right-0 z-50 flex items-center justify-center overflow-auto bg-opacity-55 bg-TxtPrimary-700"
   >
-    <div class="w-1/2 rounded-md bg-secondary animation-scale h-[75vh]">
+    <div class="w-1/2 rounded-md bg-secondary animation-scale h-[70vh]">
       <form class="p-5" @submit.prevent="submitEditBarangMasuk">
         <h2 class="mb-4 text-2xl font-normal text-left text-slate-900">Edit Data Barang Masuk</h2>
         <div class="grid grid-cols-1 gap-4">

@@ -25,12 +25,11 @@ const fetchData = async () => {
   try {
     const response = await pagedProduct(search.value, currentPage.value, limitPages.value)
     isLoading.value = false
-    totalPage.value = response.totalPage
-    currentPage.value = response.page
-    return (data.value = response.result)
+    totalPage.value = response.totalPages
+    currentPage.value = response.currentPage
+    return (data.value = response.data)
   } catch (error) {
     isLoading.value = false
-    console.log(error.message)
   }
 }
 
@@ -67,7 +66,6 @@ const exportToPDF = async () => {
       margin: 4,
       filename: 'Semua_Produk_Fortune.pdf'
     }).then(() => {
-      console.log('🚀 berhasil')
       visible.value = false
       invis.value = true
     })

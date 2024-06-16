@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import Table from '../components/Table.vue'
 import Slider from 'primevue/slider'
 import {
@@ -170,7 +170,20 @@ onMounted(async () => {
   topBarangKeluar.value = await getTopBarangKeluar()
 })
 
-const value = ref(50)
+// Computed properties for parsed percentage
+const topBarangMasukParsed = computed(() =>
+  topBarangMasuk.value.map((item) => ({
+    ...item,
+    percentage: parseInt(item.percentage, 10)
+  }))
+)
+
+const topBarangKeluarParsed = computed(() =>
+  topBarangKeluar.value.map((item) => ({
+    ...item,
+    percentage: parseInt(item.percentage, 10)
+  }))
+)
 </script>
 <template>
   <div class="bg-[rgb(240,241,243)] w-full min-h-screen flex justify-between gap-3 overflow-hidden">
@@ -227,32 +240,32 @@ const value = ref(50)
         <h2 class="text-xl font-medium mb-7 text-slate-700">Top 3 Performance</h2>
         <h3 class="mb-2 font-medium text-md text-slate-700">Barang Masuk</h3>
         <ul class="flex flex-col gap-2">
-          <li class="flex flex-col gap-2" v-for="(item, index) in topBarangMasuk" :key="index">
+          <li class="flex flex-col gap-2" v-for="(item, index) in topBarangMasukParsed" :key="index">
             <div class="flex items-center justify-between w-full">
-              <h3 class="text-xs text-slate-500">{{ item?.Nama_Produk }}</h3>
+              <h3 class="text-xs text-slate-500">{{ item?.Nama }}</h3>
               <span class="flex gap-2 text-green-600 tex-xs">
                 <i
                   class="flex items-center justify-center w-5 h-5 p-3 rotate-45 bg-green-300 rounded-full fa-solid fa-arrow-up"
                 ></i>
-                {{ item?.Quantity_Masuk }} %
+                {{ item?.percentage }} %
               </span>
             </div>
-            <Slider v-model="item.Quantity_Masuk" disabled class="text-red-600" />
+            <Slider v-model="item.percentage" disabled class="text-red-600" />
           </li>
         </ul>
         <h3 class="mt-10 mb-2 font-medium text-md text-slate-700">Barang Keluar</h3>
         <ul class="flex flex-col gap-2">
-          <li class="flex flex-col gap-2" v-for="(item, index) in topBarangKeluar" :key="index">
+          <li class="flex flex-col gap-2" v-for="(item, index) in topBarangKeluarParsed" :key="index">
             <div class="flex items-center justify-between w-full">
-              <h3 class="text-xs text-slate-500">{{ item?.Nama_Produk }}</h3>
+              <h3 class="text-xs text-slate-500">{{ item?.Nama }}</h3>
               <span class="flex gap-2 text-green-600 tex-xs">
                 <i
                   class="flex items-center justify-center w-5 h-5 p-3 rotate-45 bg-green-300 rounded-full fa-solid fa-arrow-up"
                 ></i>
-                {{ item?.Quantity_Keluar }} %
+                {{ item?.percentage }} %
               </span>
             </div>
-            <Slider v-model="item.Quantity_Keluar" disabled class="text-red-600" />
+            <Slider v-model="item.percentage" disabled class="text-red-600" />
           </li>
         </ul>
       </section>

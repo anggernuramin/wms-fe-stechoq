@@ -34,7 +34,7 @@ onMounted(async () => {
     const category = await getCategoryById(id.value)
     state.name = category?.Nama
   } catch (error) {
-    console.log(error.message)
+    error.message
   }
 })
 
