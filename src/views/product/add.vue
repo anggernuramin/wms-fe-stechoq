@@ -7,7 +7,9 @@ import { getAllCategory } from '../../services/category.services'
 import { getAllProduct, addNameProduct } from '../../services/Product.services.js'
 import axios from 'axios'
 import { capitalizeFirstLetter } from '../../libs/capitalizeFirstLetter.js'
-
+import { useToast } from 'vue-toast-notification'
+import { headerConfig } from '../../libs/headerConfig.js'
+const toast = useToast()
 const state = reactive({
   product: '',
   category: '',
@@ -26,7 +28,6 @@ const router = useRouter()
 const listProducts = ref([])
 const displayAddButton = ref(false)
 const listCategory = ref([])
-const valueCategory = ref('')
 const displayAddButtonCategory = ref(false)
 
 const isLoading = ref(false)
@@ -37,11 +38,6 @@ const rules = {
   product: { required: { ...required, message: ERROR } },
   category: { required }, // Matches state.category
   price: { required, minLength: minLength(6) } // Matches state.price
-}
-
-const handleAddNameProduct = async (name) => {
-  await addNameProduct(name)
-  selectProduct(name)
 }
 
 const v$ = useVuelidate(rules, state)
@@ -64,7 +60,6 @@ onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
 })
 
-const tokem = localStorage.getItem('token')
 const submitAddProduct = async () => {
   if (isLoading.value || isSubmit.value) return // menghentikan mengirim form lebih dari 1 kali
   const result = await v$.value.$validate()
@@ -72,26 +67,26 @@ const submitAddProduct = async () => {
   if (result) {
     try {
       isLoading.value = true
-      const res = await axios.post(
+      await axios.post(
         `${import.meta.env.VITE_VUE_APP_BASE_URL}/produk`,
         {
           Nama: capitalizeFirstLetter(state.product),
           Kategori: state.category.toUpperCase(),
           Harga_Jual: state.price
         },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${tokem}`
-          }
-        }
+        headerConfig
       )
       isSubmit.value = true
       emits('dataAdded')
+      toast.success('Data Product Berhasil Ditambahkan', {
+        position: 'top-right'
+      })
       router.push('/products')
       isLoading.value = false
     } catch (error) {
-      alert(error.message)
+      toast.error('Data Gagal Ditambahkan', {
+        position: 'top-right'
+      })
       isLoading.value = false
       isSubmit.value = false
     }
@@ -99,14 +94,11 @@ const submitAddProduct = async () => {
 }
 const setNameProducts = async () => {
   if (!state.product) {
-    // const product = await getAllProduct()
-    // console.log('🚀 ~ setNameProducts ~ product:', product)
     return (listProducts.value = product)
   }
 }
 
 const searchNameProducts = async (e) => {
-  // const product = await getAllProduct()
   const searchTerm = e.trim()
   if (!searchTerm) {
     displayAddButton.value = false
@@ -133,19 +125,21 @@ const selectProduct = (name) => {
 const setNameCategory = async () => {
   if (!state.category) {
     const category = await getAllCategory()
-    return (listCategory.value = category.slice(0, 3))
+    return (listCategory.value = category)
   }
 }
 const searchNameCategory = (e) => {
   const searchTerm = e.trim()
+
   if (!searchTerm) {
     displayAddButtonCategory.value = false
     listCategory.value = category
     return
   }
-  const search = category.filter((item) => {
-    return item?.name.toUpperCase().includes(e.toUpperCase())
+  const search = listCategory.value.filter((item) => {
+    return item?.Nama.toUpperCase().includes(e.toUpperCase())
   })
+
   if (search.length > 0) {
     displayAddButtonCategory.value = false
     listCategory.value = search
@@ -161,7 +155,6 @@ const selectCategory = (name) => {
 </script>
 
 <template>
-  <!-- Put this part before </body> tag -->
   <section
     class="absolute top-0 bottom-0 left-0 right-0 z-50 flex items-center justify-center overflow-auto bg-opacity-55 bg-TxtPrimary-700"
   >
@@ -181,7 +174,11 @@ const selectCategory = (name) => {
               @input="(e) => searchNameProducts(e.target.value)"
               @focus="setNameProducts"
             />
-            <ul id="product" class="absolute left-0 right-0 z-50 w-full text-xs bg-white shadow-md top-20">
+            <ul
+              id="product"
+              class="absolute left-0 right-0 z-50 w-full overflow-y-auto text-xs bg-white shadow-md top-20"
+              :class="{ 'h-[200px]': listProducts.length > 0, 'h-0': listProducts.length === 0 }"
+            >
               <li
                 v-for="item in listProducts"
                 :key="item?.id_produk"
@@ -192,18 +189,6 @@ const selectCategory = (name) => {
                 {{ item.Nama }}
               </li>
             </ul>
-            <span
-              v-if="displayAddButton"
-              class="absolute left-0 right-0 z-50 w-full text-xs text-red-700 bg-white top-20"
-            >
-              <button
-                class="flex items-center justify-center w-full gap-3 py-1 text-sm font-medium btn-md-success text-secondary"
-                @click.prevent="() => handleAddNameProduct(state.product)"
-              >
-                Add
-                <i class="fa-solid fa-plus"></i>
-              </button>
-            </span>
             <span
               v-for="error in v$.product.$errors"
               :key="error.$uid"
@@ -225,7 +210,11 @@ const selectCategory = (name) => {
               @input="(e) => searchNameCategory(e.target.value)"
               @focus="setNameCategory"
             />
-            <ul id="product" class="absolute left-0 right-0 z-50 w-full text-xs bg-white shadow-md top-20">
+            <ul
+              id="category"
+              class="absolute left-0 right-0 z-50 w-full overflow-y-auto text-xs bg-white shadow-md top-20"
+              :class="{ 'h-[200px]': listCategory.length > 0, 'h-0': listCategory.length === 0 }"
+            >
               <li
                 v-for="item in listCategory"
                 :key="item.id_kategori"

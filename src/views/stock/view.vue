@@ -3,21 +3,23 @@ import { useRoute } from 'vue-router'
 import { onMounted, ref } from 'vue'
 import Breadcrums from '../../components/Breadcrums.vue'
 import { GetStock } from '../../services/stock.services'
+import Loading from '../../components/Loading.vue'
 
 const location = useRoute()
 const data = ref([])
-const errorMessage = ref('')
 const isLoading = ref(false)
-const currentPage = ref(1)
-const totalPages = ref(5)
+const currentPage = ref(0)
+const totalPage = ref(0)
 const search = ref('')
 
 const fetchData = async () => {
+  isLoading.value = true
   try {
-    isLoading.value = true
-    const response = await GetStock(currentPage)
+    const response = await GetStock(search.value, currentPage.value)
+    totalPage.value = response.totalPages
+    currentPage.value = response.currentPage
     isLoading.value = false
-    data.value = response
+    data.value = response?.data
   } catch (error) {
     isLoading.value = false
     console.log(error.message)
@@ -32,7 +34,7 @@ const previousPage = () => {
 }
 
 const nextPage = () => {
-  if (currentPage.value < totalPages.value) {
+  if (currentPage.value < totalPage.value) {
     currentPage.value += 1
     fetchData()
   }
@@ -87,9 +89,10 @@ const updateSearch = (event) => {
           </form>
         </div>
       </div>
-      <template v-if="isLoading"> <h1>Loading . . .</h1></template>
+      <template v-if="isLoading">
+        <Loading />
+      </template>
       <table class="table rounded-sm">
-        <!-- head -->
         <thead class="bg-zinc-50">
           <tr class="text-sm font-light text-slate-700 border-b-slate-100">
             <th class="font-medium">#</th>
@@ -111,32 +114,36 @@ const updateSearch = (event) => {
               <td>{{ item.Qty_Sekarang }}</td>
             </tr>
           </template>
+          <div
+            v-if="data.length === 0 && isLoading === false"
+            class="block w-full pl-4 my-5 text-lg font-normal text-left text-red-600"
+          >
+            <p class="block w-full">Data Stok Yang Anda Cari Tidak Ada.</p>
+          </div>
         </tbody>
       </table>
-      <template v-if="errorMessage">
-        {{ errorMessage }}
-      </template>
+
       <div class="flex items-center justify-end gap-5 py-5 mt-3 border-t pe-16 text-TxtPrimary-700">
-        <button class="btn-sm-default" :disabled="currentPage === 1" @click="previousPage">Previous</button>
-        <span
-          >Page <b>{{ currentPage }}</b> of <b>{{ totalPages }}</b></span
+        <button
+          class="cursor-pointer btn-sm-default disabled:bg-slate-200 disabled:cursor-default"
+          :disabled="currentPage === 1"
+          @click="previousPage"
         >
-        <button class="btn-sm-default" :disabled="currentPage === totalPages" @click="nextPage">Next</button>
+          Previous
+        </button>
+        <span
+          >Page <b>{{ currentPage }}</b> of <b>{{ totalPage }}</b></span
+        >
+        <button
+          class="btn-sm-default disabled:bg-slate-200 disabled:cursor-default"
+          :disabled="currentPage === totalPage"
+          @click="nextPage"
+        >
+          Next
+        </button>
       </div>
     </section>
   </div>
 
-  <!-- Put this part before </body> tag -->
-  <!-- <dialog id="modal_tambah_data" class="modal">
-    <div class="rounded-md modal-box bg-secondary">
-      <h3 class="text-lg font-bold">Hello!</h3>
-      <p class="py-4">Press ESC key or click the button below to close</p>
-      <div class="modal-action">
-        <form method="dialog">
-          <button class="btn bg-btnPrimary">Close</button>
-        </form>
-      </div>
-    </div>
-  </dialog> -->
-  <router-view @dataAdded="fetchData"></router-view>
+  <router-view></router-view>
 </template>

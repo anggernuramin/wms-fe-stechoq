@@ -4,8 +4,10 @@ import { useRouter, useRoute } from 'vue-router'
 import { useVuelidate } from '@vuelidate/core'
 import axios from 'axios'
 import { required, helpers, minLength } from '@vuelidate/validators'
-import { getProductById } from '../../services/Product.services'
-
+import { getAllProduct, getProductById } from '../../services/Product.services'
+import { headerConfig } from '../../libs/headerConfig'
+import { useToast } from 'vue-toast-notification'
+const toast = useToast()
 const state = reactive({
   product: '',
   category: '',
@@ -60,61 +62,43 @@ onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
 })
 
-const product = [
-  {
-    id: 1,
-    name: 'VIVO Y02 3/32'
-  },
-  {
-    id: 2,
-    name: 'SAM A057 A05S 6/128'
-  },
-  {
-    id: 3,
-    name: 'REDMI NOTE 13 PR0 8/256'
-  },
-  {
-    id: 4,
-    name: 'IPHONE 11 64GB'
-  }
-]
-
-const category = [
-  {
-    id: 1,
-    name: 'VIVO Y02 3/32'
-  }
-]
-
 const capitalizeFirstLetter = (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1)
 }
+let product = []
+
+onMounted(async () => {
+  const products = await getAllProduct()
+  return (product = products)
+})
 
 const submitEditProduct = async () => {
   if (isLoading.value || isSubmit.value) return
   const result = await v$.value.$validate()
-  // Check apakah ada error
   if (result) {
     try {
       isLoading.value = true
 
-      const res = await axios.patch(
+      await axios.patch(
         `${import.meta.env.VITE_VUE_APP_BASE_URL}/produk/${productId}`,
         {
           Nama: capitalizeFirstLetter(state.product),
           Kategori: state.category.toUpperCase(),
           Harga_Jual: state.price
         },
-        {
-          headers: { 'Content-Type': 'application/json' }
-        }
+        headerConfig
       )
       isSubmit.value = true
       emits('dataAdded')
+      toast.success('Data Product Berhasil Diedit', {
+        position: 'top-right'
+      })
       router.push('/products')
       isLoading.value = false
     } catch (error) {
-      alert(error.message)
+      toast.error('Data Product Gagal Diedit', {
+        position: 'top-right'
+      })
       isLoading.value = false
       isSubmit.value = false
     }
@@ -128,13 +112,14 @@ const setNameProducts = () => {
 }
 const searchNameProducts = (e) => {
   const searchTerm = e.trim()
+  console.log('🚀 ~ searchNameProducts ~ searchTerm:', searchTerm)
   if (!searchTerm) {
     displayAddButton.value = false
     listProducts.value = product
     return
   }
   const search = product.filter((item) => {
-    return item?.name.toUpperCase().includes(e.toUpperCase())
+    return item?.Nama.toUpperCase().includes(e.toUpperCase())
   })
   if (search.length > 0) {
     displayAddButton.value = false
@@ -162,7 +147,7 @@ const searchNameCategory = (e) => {
     return
   }
   const search = category.filter((item) => {
-    return item?.name.toUpperCase().includes(e.toUpperCase())
+    return item?.Nama.toUpperCase().includes(e.toUpperCase())
   })
   if (search.length > 0) {
     displayAddButtonCategory.value = false
@@ -179,7 +164,6 @@ const selectCategory = (name) => {
 </script>
 
 <template>
-  <!-- Put this part before </body> tag -->
   <section
     class="absolute top-0 bottom-0 left-0 right-0 z-50 flex items-center justify-center overflow-auto bg-opacity-55 bg-TxtPrimary-700"
   >
@@ -210,17 +194,7 @@ const selectCategory = (name) => {
                 {{ item.name }}
               </li>
             </ul>
-            <span
-              v-if="displayAddButton"
-              class="absolute left-0 right-0 z-50 w-full text-xs text-red-700 bg-white top-20"
-            >
-              <button
-                class="flex items-center justify-center w-full gap-3 py-1 text-sm font-medium btn-md-success text-secondary"
-              >
-                Add
-                <i class="fa-solid fa-plus"></i>
-              </button>
-            </span>
+
             <span
               v-for="error in v$.product.$errors"
               :key="error.$uid"

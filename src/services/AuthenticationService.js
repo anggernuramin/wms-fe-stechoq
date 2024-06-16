@@ -11,10 +11,6 @@ export default {
     return Api().get('/dashboard')
   },
 
-  getToken(token) {
-    return Api().post('/token', token)
-  },
-
   logout() {
     localStorage.removeItem('token')
   }

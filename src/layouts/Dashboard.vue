@@ -2,7 +2,38 @@
 import { useStore } from 'vuex'
 
 import Sidebar from '../components/Sidebar.vue'
+import { useRouter } from 'vue-router'
+import { onMounted } from 'vue'
+import axios from 'axios'
 const store = useStore()
+
+const router = useRouter()
+
+const handleGetToken = async () => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    try {
+      const res = await axios.post(`${import.meta.env.VITE_VUE_APP_BASE_URL}/token`, { token }) // Mengirim token dalam body permintaan
+      const data = res.data
+      if (data.status === '404') {
+        localStorage.removeItem('token')
+        router.push('/login')
+      } else {
+        store.commit('setUser', data.data)
+      }
+    } catch (error) {
+      console.error('Error while fetching token:', error) // Logging kesalahan
+      router.push('/login')
+    }
+  } else {
+    console.log('Token not found in localStorage')
+    router.push('/login')
+  }
+}
+
+onMounted(() => {
+  handleGetToken()
+})
 </script>
 <template>
   <div>

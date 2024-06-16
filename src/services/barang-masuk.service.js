@@ -10,10 +10,13 @@ export const getBarangMasukById = async (id) => {
   }
 }
 
-export const getAllBarangMasuk = async (page) => {
+export const getAllBarangMasuk = async (page, limit) => {
   try {
-    let res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/searchBM?page=${page}&limit=10 `, headerConfig)
-    return res.data?.result
+    let res = await axios.get(
+      `${import.meta.env.VITE_VUE_APP_BASE_URL}/searchBM?page=${page}&limit=${limit} `,
+      headerConfig
+    )
+    return res.data
   } catch (err) {
     return err.message
   }
@@ -40,14 +43,14 @@ export const deleteBarangMasuk = async (id) => {
   }
 }
 
-export const searchBarangMasuk = async (query) => {
+export const searchBarangMasuk = async (query, page, limit) => {
   try {
     let res = await axios.get(
-      `${import.meta.env.VITE_VUE_APP_BASE_URL}/searchBM?search_query=${query}&page=0&limit=10`,
+      `${import.meta.env.VITE_VUE_APP_BASE_URL}/searchBM?search_query=${query}&page=${page}&limit=${limit}`,
 
       headerConfig
     )
-    return res.data.result
+    return res.data
   } catch (err) {
     return err.message
   }

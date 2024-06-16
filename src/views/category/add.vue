@@ -4,7 +4,8 @@ import { useVuelidate } from '@vuelidate/core'
 import { required, helpers, minLength } from '@vuelidate/validators'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
-
+import { useToast } from 'vue-toast-notification'
+const toast = useToast()
 // mengirimakan data ke parent element
 const emits = defineEmits(['dataAdded'])
 
@@ -46,10 +47,15 @@ const submitAddProduct = async () => {
       )
       isSubmit.value = true
       emits('dataAdded')
+      toast.success('Kategori Berhasil Ditambahkan', {
+        position: 'top-right'
+      })
       router.push('/products/category')
       isLoading.value = false
     } catch (error) {
-      alert(error.message)
+      toast.error('Kategori Gagal Ditambahkan', {
+        position: 'top-right'
+      })
       isLoading.value = false
       isSubmit.value = false
     }

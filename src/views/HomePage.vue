@@ -2,39 +2,17 @@
 import { ref, onMounted } from 'vue'
 import Table from '../components/Table.vue'
 import Slider from 'primevue/slider'
-import { getAllJumlahStockBarang, getAllJumlahSaldoBarang, getAllStockReport } from '../services/dashboard-service'
+import {
+  getAllJumlahStockBarang,
+  getAllJumlahSaldoBarang,
+  getAllStockReport,
+  getPersentaseCategory,
+  getTopBarangMasuk,
+  getTopBarangKeluar
+} from '../services/dashboard-service'
 import { formatAngka } from '../libs/formatAngka.js'
 import { formatCurrentDate } from '../libs/formatCurrentDate.js'
 import { formatRupiah } from '../libs/formatRupiah.js'
-import { useRouter } from 'vue-router'
-import { useStore } from 'vuex'
-// User Login
-
-const router = useRouter()
-const store = useStore()
-
-// onMounted(async () => {
-//   const token = localStorage.getItem('token')
-//   if (token) {
-//     try {
-//       const response = await AuthenticationService.token({
-//         token: token
-//       })
-//       console.log('🚀 ~ onMounted ~ response:', response)
-//       // if (!response?.data) {
-//       //   localStorage.removeItem('token')
-//       //   router.push('/login')
-//       //   return
-//       // }
-//       const data = await response?.data
-//       store.dispatch('setUser', data)
-//       return
-//     } catch (error) {
-//       // router.push('/login')
-//       return
-//     }
-//   }
-// })
 
 const jumlahStockBarang = ref(null)
 const jumlahSaldoBarang = ref(null)
@@ -51,19 +29,19 @@ const chartOptionsPie = ref({
   chart: {
     type: 'pie'
   },
-  labels: ['Oppo', 'Samsung', 'Iphone', 'Infinix', 'Vivo'],
+  labels: labelsCategory.value,
   legend: {
     position: 'bottom',
     horizontalAlign: 'center',
     floating: false,
-    fontSize: '14px',
+    fontSize: '12px',
     labels: {
       colors: undefined,
       useSeriesColors: false
     },
     markers: {
-      width: 12,
-      height: 12,
+      width: 8,
+      height: 8,
       strokeWidth: 0,
       strokeColor: '#fff',
       radius: 12
@@ -97,7 +75,7 @@ const chartOptionsPie = ref({
   ]
 })
 
-const chartSeriesPie = ref([44, 55, 13, 43, 22])
+const chartSeriesPie = ref(stocksCategory.value)
 
 // Data untuk grafik batang
 const barangMasukData = ref([
@@ -172,6 +150,26 @@ onMounted(async () => {
   jumlahSaldoBarang.value = await getAllJumlahSaldoBarang()
 })
 
+onMounted(async () => {
+  jumlahStockBarang.value = await getAllJumlahStockBarang()
+  jumlahSaldoBarang.value = await getAllJumlahSaldoBarang()
+})
+
+onMounted(async () => {
+  const data = await getPersentaseCategory()
+  if (data.length > 0) {
+    data.map((item) => {
+      labelsCategory.value.push(item.Nama)
+      stocksCategory.value.push(parseFloat(item.percentage))
+    })
+  }
+})
+
+onMounted(async () => {
+  topBarangMasuk.value = await getTopBarangMasuk()
+  topBarangKeluar.value = await getTopBarangKeluar()
+})
+
 const value = ref(50)
 </script>
 <template>
@@ -223,87 +221,38 @@ const value = ref(50)
 
       <section class="p-6 mt-3 bg-white rounded-md">
         <h2 class="mb-5 text-xl font-medium text-slate-700">Category of Stock</h2>
-        <apexchart :options="chartOptionsPie" :series="chartSeriesPie" type="pie" height="380"></apexchart>
+        <apexchart :options="chartOptionsPie" :series="chartSeriesPie" type="pie" height="470"></apexchart>
       </section>
       <section class="p-6 mt-2 bg-white rounded-md">
         <h2 class="text-xl font-medium mb-7 text-slate-700">Top 3 Performance</h2>
         <h3 class="mb-2 font-medium text-md text-slate-700">Barang Masuk</h3>
-        <ul class="flex flex-col gap-5">
-          <li class="flex flex-col gap-2">
+        <ul class="flex flex-col gap-2">
+          <li class="flex flex-col gap-2" v-for="(item, index) in topBarangMasuk" :key="index">
             <div class="flex items-center justify-between w-full">
-              <h3 class="text-xs text-slate-500">Samsung A05S</h3>
+              <h3 class="text-xs text-slate-500">{{ item?.Nama_Produk }}</h3>
               <span class="flex gap-2 text-green-600 tex-xs">
                 <i
                   class="flex items-center justify-center w-5 h-5 p-3 rotate-45 bg-green-300 rounded-full fa-solid fa-arrow-up"
                 ></i>
-                122%
+                {{ item?.Quantity_Masuk }} %
               </span>
             </div>
-            <Slider v-model="value" disabled class="text-red-600" />
-          </li>
-          <li class="flex flex-col gap-2">
-            <div class="flex items-center justify-between w-full">
-              <h3 class="text-xs text-slate-500">Samsung A05S</h3>
-              <span class="flex gap-2 text-green-600">
-                <i
-                  class="flex items-center justify-center w-5 h-5 p-3 rotate-45 bg-green-300 rounded-full fa-solid fa-arrow-up"
-                ></i>
-                122%
-              </span>
-            </div>
-            <Slider v-model="value" disabled class="text-red-600 appearance-none" />
-          </li>
-
-          <li class="flex flex-col gap-2">
-            <div class="flex items-center justify-between w-full">
-              <h3 class="text-xs text-slate-500">Samsung A05S</h3>
-              <span class="flex gap-2 text-green-600">
-                <i
-                  class="flex items-center justify-center w-5 h-5 p-3 rotate-45 bg-green-300 rounded-full fa-solid fa-arrow-up"
-                ></i>
-                122%
-              </span>
-            </div>
-            <Slider v-model="value" disabled class="text-red-600" />
+            <Slider v-model="item.Quantity_Masuk" disabled class="text-red-600" />
           </li>
         </ul>
         <h3 class="mt-10 mb-2 font-medium text-md text-slate-700">Barang Keluar</h3>
-        <ul class="flex flex-col gap-5">
-          <li class="flex flex-col gap-2">
+        <ul class="flex flex-col gap-2">
+          <li class="flex flex-col gap-2" v-for="(item, index) in topBarangKeluar" :key="index">
             <div class="flex items-center justify-between w-full">
-              <h3 class="text-xs text-slate-500">Samsung A05S</h3>
+              <h3 class="text-xs text-slate-500">{{ item?.Nama_Produk }}</h3>
               <span class="flex gap-2 text-green-600 tex-xs">
                 <i
                   class="flex items-center justify-center w-5 h-5 p-3 rotate-45 bg-green-300 rounded-full fa-solid fa-arrow-up"
                 ></i>
-                122%
+                {{ item?.Quantity_Keluar }} %
               </span>
             </div>
-            <Slider v-model="value" disabled class="text-red-600" />
-          </li>
-          <li class="flex flex-col gap-2">
-            <div class="flex items-center justify-between w-full">
-              <h3 class="text-xs text-slate-500">Samsung A05S</h3>
-              <span class="flex gap-2 text-green-600">
-                <i
-                  class="flex items-center justify-center w-5 h-5 p-3 rotate-45 bg-green-300 rounded-full fa-solid fa-arrow-up"
-                ></i>
-                122%
-              </span>
-            </div>
-            <Slider v-model="value" disabled class="text-red-600" />
-          </li>
-          <li class="flex flex-col gap-2">
-            <div class="flex items-center justify-between w-full">
-              <h3 class="text-xs text-slate-500">Samsung A05S</h3>
-              <span class="flex gap-2 text-green-600">
-                <i
-                  class="flex items-center justify-center w-5 h-5 p-3 rotate-45 bg-green-300 rounded-full fa-solid fa-arrow-up"
-                ></i>
-                122%
-              </span>
-            </div>
-            <Slider v-model="value" disabled class="text-red-600" />
+            <Slider v-model="item.Quantity_Keluar" disabled class="text-red-600" />
           </li>
         </ul>
       </section>

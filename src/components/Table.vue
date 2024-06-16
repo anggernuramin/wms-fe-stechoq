@@ -2,10 +2,10 @@
   <div class="p-6 mt-2 bg-white rounded-md card">
     <h2 class="text-xl font-medium text-slate-700">Top Product</h2>
     <DataTable :value="products">
-      <Column field="code" header="No"></Column>
-      <Column field="name" header="Name"></Column>
-      <Column field="category" header="Category"></Column>
-      <Column field="quantity" header="Quantity"></Column>
+      <Column field="No" header="No"></Column>
+      <Column field="Nama_Produk" header="Nama"></Column>
+      <Column field="Kategori" header="Kategori"></Column>
+      <Column field="Quantity_Keluar" header="Quantity"></Column>
     </DataTable>
   </div>
 </template>
@@ -17,9 +17,17 @@ import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import { getTopProduct } from '../services/dashboard-service.js'
 
-onMounted(async () => {
-  products.value = await getTopProduct()
-})
+const products = ref([])
 
-const products = ref()
+onMounted(async () => {
+  const data = await getTopProduct()
+  if (data.length > 0) {
+    products.value = data.map((item, index) => ({
+      No: index + 1,
+      Nama_Produk: item.Nama_Produk,
+      Kategori: item.Kategori,
+      Quantity_Keluar: item.Quantity_Keluar
+    }))
+  }
+})
 </script>

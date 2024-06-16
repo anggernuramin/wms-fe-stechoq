@@ -6,7 +6,8 @@ import { required, helpers, minLength } from '@vuelidate/validators'
 import { getAllCategory } from '../../services/category.services'
 import { getAllProduct } from '../../services/Product.services.js'
 import axios from 'axios'
-import { capitalizeFirstLetter } from '../../libs/capitalizeFirstLetter.js'
+import { useToast } from 'vue-toast-notification'
+import { headerConfig } from '../../libs/headerConfig.js'
 
 const state = reactive({
   keterangan: '',
@@ -15,10 +16,12 @@ const state = reactive({
   qty: ''
 })
 
+const toast = useToast()
 let product = []
 
 onMounted(async () => {
   const products = await getAllProduct()
+  console.log('🚀 ~ onMounted ~ products:', products)
   return (product = products)
 })
 
@@ -26,7 +29,6 @@ const emits = defineEmits(['dataAdded'])
 const listProducts = ref([])
 const displayAddButton = ref(false)
 const listCategory = ref([])
-const valueCategory = ref('')
 const displayAddButtonCategory = ref(false)
 
 const isLoading = ref(false)
@@ -45,7 +47,6 @@ const rules = {
 //   selectProduct(name)
 // }
 
-const tokem = localStorage.getItem('token')
 const v$ = useVuelidate(rules, state)
 const router = useRouter()
 const submitAddout = async () => {
@@ -63,20 +64,19 @@ const submitAddout = async () => {
           kategori: state.category,
           quantity: state.qty
         },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${tokem}`
-          }
-        }
+        headerConfig
       )
-      console.log('POST request successful:', res)
       isSubmit.value = true
+      toast.success('Data Barang Keluar Berhasil Ditambahkan', {
+        position: 'top-right'
+      })
       emits('dataAdded')
       router.push('/barangkeluar')
       isLoading.value = false
     } catch (error) {
-      alert(error.message)
+      toast.error('Data Barang Keluar Gagal Ditambahkan', {
+        position: 'top-right'
+      })
       isLoading.value = false
       isSubmit.value = false
     }
@@ -141,7 +141,7 @@ const selectProduct = (name) => {
 const setNameCategory = async () => {
   if (!state.category) {
     const category = await getAllCategory()
-    return (listCategory.value = category.slice(0, 3))
+    return (listCategory.value = category)
   }
 }
 //
@@ -180,23 +180,6 @@ const selectCategory = (name) => {
         <h2 class="mb-4 text-2xl font-normal text-left text-slate-900">Tambah Data Untuk Barang Keluar</h2>
         <div class="grid grid-cols-1 gap-4">
           <div class="relative flex flex-col gap-2">
-            <label for="keterangan" class="text-sm font-normal text-TxtPrimary-700"
-              >Keterangan<span class="text-lg text-red-700 ps-2">*</span></label
-            >
-            <input
-              id="keterangan"
-              v-model="state.keterangan"
-              type="text"
-              placeholder="masukan Keterangan"
-              class="w-full px-3 py-[6px] border rounded-md bg-secondary outline-none"
-              name="keterangan"
-            />
-            <span v-for="error in v$.keterangan.$errors" :key="error.$uid" class="text-xs text-red-80">
-              {{ error.$message }}
-            </span>
-          </div>
-
-          <div class="relative flex flex-col gap-2">
             <label for="product" class="text-sm font-normal text-TxtPrimary-700"
               >Product<span class="text-lg text-red-700 ps-2">*</span></label
             >
@@ -208,7 +191,11 @@ const selectCategory = (name) => {
               @input="(e) => searchNameProducts(e.target.value)"
               @focus="setNameProducts"
             />
-            <ul id="product" class="absolute left-0 right-0 z-50 w-full text-xs bg-white shadow-md top-20">
+            <ul
+              id="product"
+              class="absolute left-0 right-0 z-50 w-full overflow-y-auto text-xs bg-white shadow-md top-20"
+              :class="{ 'h-[200px]': listProducts.length > 0, 'h-0': listProducts.length === 0 }"
+            >
               <li
                 v-for="item in listProducts"
                 :key="item?.id_produk"
@@ -240,7 +227,11 @@ const selectCategory = (name) => {
               @input="(e) => searchNameCategory(e.target.value)"
               @focus="setNameCategory"
             />
-            <ul id="product" class="absolute left-0 right-0 z-50 w-full text-xs bg-white shadow-md top-20">
+            <ul
+              id="category"
+              class="absolute left-0 right-0 z-50 w-full overflow-y-auto text-xs bg-white shadow-md top-20"
+              :class="{ 'h-[200px]': listCategory.length > 0, 'h-0': listCategory.length === 0 }"
+            >
               <li
                 v-for="item in listCategory"
                 :key="item.id_kategori"
@@ -262,7 +253,7 @@ const selectCategory = (name) => {
 
           <div class="relative flex flex-col gap-2">
             <label for="qty" class="text-sm font-normal text-TxtPrimary-700"
-              >Kuantitas<span class="text-lg text-red-700 ps-2">*</span></label
+              >Quantity<span class="text-lg text-red-700 ps-2">*</span></label
             >
             <input
               id="qty"
@@ -272,7 +263,24 @@ const selectCategory = (name) => {
               class="w-full px-3 py-[6px] border rounded-md bg-secondary outline-none"
               name="qty"
             />
-            <span v-for="error in v$.qty.$errors" :key="error.$uid" class="text-xs text-red-80">
+            <span v-for="error in v$.qty.$errors" :key="error.$uid" class="text-xs text-red-800">
+              {{ error.$message }}
+            </span>
+          </div>
+
+          <div class="relative flex flex-col gap-2">
+            <label for="keterangan" class="text-sm font-normal text-TxtPrimary-700"
+              >Keterangan<span class="text-lg text-red-700 ps-2">*</span></label
+            >
+            <input
+              id="keterangan"
+              v-model="state.keterangan"
+              type="text"
+              placeholder="masukan Keterangan"
+              class="w-full px-3 py-[6px] border rounded-md bg-secondary outline-none"
+              name="keterangan"
+            />
+            <span v-for="error in v$.keterangan.$errors" :key="error.$uid" class="text-xs text-red-800">
               {{ error.$message }}
             </span>
           </div>

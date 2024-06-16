@@ -3,11 +3,9 @@
 import { reactive, ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useVuelidate } from '@vuelidate/core'
-import { required, helpers, minLength } from '@vuelidate/validators'
-import { getAllCategory } from '../../services/category.services'
+import { required } from '@vuelidate/validators'
 import { getAllProduct, addNameProduct } from '../../services/Product.services.js'
 import axios from 'axios'
-import { capitalizeFirstLetter } from '../../libs/capitalizeFirstLetter.js'
 import { useToast } from 'vue-toast-notification'
 import 'vue-toast-notification/dist/theme-sugar.css'
 import { headerConfig } from '../../libs/headerConfig.js'
@@ -50,6 +48,7 @@ const rules = {
   category: { required }
 }
 
+// tambah product lebih dari satu
 const handleAddNameProduct = async (name, kategori) => {
   statusMessageAdd.value = 'Loading. . .'
   await addNameProduct(name)
@@ -130,12 +129,11 @@ const searchNameProducts = async (e) => {
   const search = product.filter((item) => {
     return item?.Nama.toUpperCase().includes(e.toUpperCase())
   })
+
   if (search.length > 0) {
-    displayAddButton.value = false
     listProducts.value = search
   } else {
     listProducts.value = []
-    displayAddButton.value = true
   }
 }
 const selectProduct = (name, kategori) => {
@@ -188,7 +186,11 @@ watch(displayAddButton, (displayCurrentButton) => {
               @input="(e) => searchNameProducts(e.target.value)"
               @focus="setNameProducts"
             />
-            <ul id="product" class="absolute left-0 right-0 z-50 w-full text-xs bg-white shadow-md top-20">
+            <ul
+              id="product"
+              class="absolute left-0 right-0 z-50 w-full overflow-y-auto text-xs bg-white shadow-md top-20"
+              :class="{ 'h-[200px]': listProducts.length > 0, 'h-0': listProducts.length === 0 }"
+            >
               <li
                 v-for="item in listProducts"
                 :key="item?.id_produk"

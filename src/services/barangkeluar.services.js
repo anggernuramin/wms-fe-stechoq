@@ -1,19 +1,14 @@
 import axios from 'axios'
+import { headerConfig } from '../libs/headerConfig'
 
-const token = localStorage.getItem('token')
-
-export const GetBarangKeluar = async (teks, id) => {
+export const GetBarangKeluar = async (query, page) => {
   try {
     const res = await axios.get(
-      `${import.meta.env.VITE_VUE_APP_BASE_URL}/barangKeluar?search=${teks}&page=${id.value}`,
-      {
-        headers: {
-          'Cache-Control': 'no-cache',
-          Authorization: `Bearer ${token}`
-        }
-      }
+      `${import.meta.env.VITE_VUE_APP_BASE_URL}/barangKeluar?search=${query}&page=${page}`,
+
+      headerConfig
     )
-    return res.data.data
+    return res.data
   } catch (error) {
     return error.message
   }
@@ -21,12 +16,7 @@ export const GetBarangKeluar = async (teks, id) => {
 
 export const GetBarangKeluarID = async (teks) => {
   try {
-    const res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/barangKeluar/getByID/${teks}`, {
-      headers: {
-        'Cache-Control': 'no-cache',
-        Authorization: `Bearer ${token}`
-      }
-    })
+    const res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/barangKeluar/getByID/${teks}`, headerConfig)
     return res.data.data
   } catch (error) {
     return error.message
@@ -35,13 +25,7 @@ export const GetBarangKeluarID = async (teks) => {
 
 export const DeleteBarangKeluar = async (id) => {
   try {
-    const res = await axios.delete(`${import.meta.env.VITE_VUE_APP_BASE_URL}/barangKeluar/delete/${id}`, {
-      headers: {
-        'Cache-Control': 'no-cache',
-        Authorization: `Bearer ${token}`
-      }
-    })
-    console.log('🚀 ~ deleteBarangKeluar ~ res:', res)
+    const res = await axios.delete(`${import.meta.env.VITE_VUE_APP_BASE_URL}/barangKeluar/delete/${id}`, headerConfig)
     return res.data.statusCode
   } catch (error) {
     return error.message
@@ -50,13 +34,7 @@ export const DeleteBarangKeluar = async (id) => {
 
 export const UpdateBarangkeluar = async (id) => {
   try {
-    const res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/barangKeluar/update/${id}`, {
-      headers: {
-        'Cache-Control': 'no-cache',
-        Authorization: `Bearer ${token}`
-      }
-    })
-    console.log('🚀 ~ deleteBarangKeluar ~ res:', res)
+    const res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/barangKeluar/update/${id}`, headerConfig)
     return res.data.statusCode
   } catch (error) {
     return error.message
@@ -65,16 +43,13 @@ export const UpdateBarangkeluar = async (id) => {
 
 export const submitAddout = async (data) => {
   try {
-    const res = await axios.post(`${import.meta.env.VITE_VUE_APP_BASE_URL}/barangKeluar/createProduk`, data, {
-      headers: {
-        'Cache-Control': 'no-cache',
-        Authorization: `Bearer ${token}`
-      }
-    })
-    console.log('POST request successful:', res)
+    const res = await axios.post(
+      `${import.meta.env.VITE_VUE_APP_BASE_URL}/barangKeluar/createProduk`,
+      data,
+      headerConfig
+    )
     return res.data
   } catch (error) {
-    console.error('Error submitting data:', error)
     throw new Error(error.message)
   }
 }

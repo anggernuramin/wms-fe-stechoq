@@ -134,24 +134,14 @@ const routes = [
         component: () => import('../views/barangMasuk/search.vue'),
         meta: { requiresAuth: true }
       },
-      {
-        path: '/products/category/search',
-        name: 'category search',
-        component: () => import('../views/category/search.vue'),
-        meta: { requiresAuth: true }
-      },
+
       {
         path: '',
         name: 'Home',
         component: () => import('../views/HomePage.vue'),
         meta: { requiresAuth: true }
       },
-      {
-        path: 'profile',
-        name: 'Profile',
-        component: () => import('../views/ProfilePage.vue'),
-        meta: { requiresAuth: true }
-      },
+
       {
         path: 'kartu-stock',
         name: 'kartu stock',

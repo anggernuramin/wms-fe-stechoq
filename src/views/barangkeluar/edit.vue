@@ -4,6 +4,7 @@ import { ref, onMounted, defineEmits, nextTick } from 'vue'
 import { UpdateBarangkeluar, GetBarangKeluarID, GetBarangKeluar } from '../../services/barangkeluar.services.js'
 import html2pdf from 'html2pdf.js'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
+import { useToast } from 'vue-toast-notification'
 
 // Define reactive variables and route handlers
 const route = useRoute()
@@ -13,7 +14,7 @@ const id = ref(route.params.id)
 const baseUrl = import.meta.env.VITE_VUE_APP_BASE_URL
 const emits = defineEmits(['dataAdded'])
 const visible = ref(false)
-
+const toast = useToast()
 // Function to fetch data based on ID
 const TakeMe = async () => {
   try {
@@ -27,8 +28,10 @@ const TakeMe = async () => {
 
 // Function to handle update
 const handleUpdate = async () => {
-  const res = await UpdateBarangkeluar(id.value)
-  console.log('🚀 ~ handleUpdate ~ res:', res)
+  await UpdateBarangkeluar(id.value)
+  toast.success('Data Barang Keluar Berhasil Diedit', {
+    position: 'top-right'
+  })
   router.push('/barangkeluar')
   emits('dataAdded')
 }
@@ -82,7 +85,7 @@ const exportToPDF = async () => {
         <!-- QR Code Component -->
         <div id="pdf_export" class="flex flex-col items-center my-4">
           <div v-show="visible" class="hero">
-            <div class="hero-content text-center">
+            <div class="text-center hero-content">
               <div class="max-w-md">
                 <h1 class="text-5xl font-bold">Surat Jalan Fortune Code</h1>
                 <p class="py-3 text-xs text-left">- from team 1 fortune made with ❤️</p>
@@ -91,7 +94,7 @@ const exportToPDF = async () => {
           </div>
           <vue-qrcode :value="`${baseUrl}/barangKeluar/update/${id}`" size="200"></vue-qrcode>
           <br />
-          <p v-show="visible" class="hero-content py-6">
+          <p v-show="visible" class="py-6 hero-content">
             surat jalan ini ditunjukan sebagai bukti jalan yang di gunakan untuk sebagai bukti jalan dan bukti
             pengiriman, scan barcode jika sudah selesai dalam mengirim barang ini lalu serahkan barang nya
           </p>

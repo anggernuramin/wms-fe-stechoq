@@ -5,14 +5,15 @@ import { required } from '@vuelidate/validators'
 import axios from 'axios'
 import { useRouter, useRoute } from 'vue-router'
 import { getCategoryById } from '../../services/category.services'
+import { headerConfig } from '../../libs/headerConfig'
+import { useToast } from 'vue-toast-notification'
 
 // mengirimakan data ke parent element
 const emits = defineEmits(['dataAdded'])
 const router = useRouter()
 const route = useRoute()
-const data = ref(null)
 const id = ref(route.params.id)
-
+const toast = useToast()
 // digunakan untuk menympan state data primitif seperti object dan array
 const state = reactive({
   name: ''
@@ -51,12 +52,13 @@ const submitEditProduct = async () => {
           id: id.value,
           Nama: state.name.toUpperCase()
         },
-        {
-          headers: { 'Content-Type': 'application/json' }
-        }
+        headerConfig
       )
       isSubmit.value = true
       emits('dataAdded')
+      toast.success('Kategori Berhasil Diedit', {
+        position: 'top-right'
+      })
       router.push('/products/category')
       isLoading.value = false
     } catch (error) {
@@ -69,7 +71,6 @@ const submitEditProduct = async () => {
 </script>
 
 <template>
-  <!-- Put this part before </body> tag -->
   <router-link to="/products/category" class="text-slate-400">Category</router-link>
 
   <section

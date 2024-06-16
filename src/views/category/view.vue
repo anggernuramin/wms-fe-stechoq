@@ -2,25 +2,29 @@
 import { useRoute } from 'vue-router'
 import { onMounted, ref, nextTick } from 'vue'
 import Breadcrums from '../../components/Breadcrums.vue'
-import { getAllCategory, pagedCategory } from '../../services/category.services'
+import { pagedCategory } from '../../services/category.services'
 import html2pdf from 'html2pdf.js'
+import Loading from '../../components/Loading.vue'
 
 const location = useRoute()
 const data = ref([])
 const errorMessage = ref('')
 const isLoading = ref(false)
-const currentPage = ref(1)
-const totalPages = ref(10)
+const totalPage = ref(0)
+const currentPage = ref(0)
+const limitPages = ref(10)
 const search = ref('')
 const visible = ref(false)
 const invis = ref(true)
 
 const fetchData = async () => {
+  isLoading.value = true
   try {
-    isLoading.value = true
-    const response = await pagedCategory(currentPage, 10, search.value)
+    const response = await pagedCategory(search.value, currentPage.value, limitPages.value)
+    totalPage.value = response.totalPage
+    currentPage.value = response.page
     isLoading.value = false
-    data.value = response
+    return (data.value = response.result)
   } catch (error) {
     isLoading.value = false
     console.log(error.message)
@@ -35,7 +39,7 @@ const previousPage = () => {
 }
 
 const nextPage = () => {
-  if (currentPage.value < totalPages.value) {
+  if (currentPage.value < totalPage.value) {
     currentPage.value += 1
     fetchData()
   }
@@ -47,13 +51,12 @@ onMounted(() => {
 
 const updateSearch = (event) => {
   search.value = event.target.value
-  console.log('MASUK PAK EKO')
   fetchData()
 }
 
 const exportToPDF = async () => {
-  visible.value = true
-  invis.value = false
+  // visible.value = true
+  // invis.value = false
   await nextTick()
   const element = document.getElementById('pdf_export')
   if (element) {
@@ -62,13 +65,13 @@ const exportToPDF = async () => {
       filename: 'Semua_Kategori_Fortune.pdf'
     }).then(() => {
       console.log('🚀 berhasil')
-      visible.value = false
-      invis.value = true
+      // visible.value = false
+      // invis.value = true
     })
   } else {
     console.error('Element with ID "pdf_export" not found!')
-    visible.value = false
-    invis.value = true
+    // visible.value = false
+    // invis.value = true
   }
   fetchData()
 }
@@ -128,11 +131,13 @@ const exportToPDF = async () => {
           </form>
         </div>
       </div>
-      <template v-if="isLoading"> <h1>Loading . . .</h1></template>
+      <template v-if="isLoading">
+        <Loading />
+      </template>
 
       <div id="pdf_export">
         <div v-show="visible" class="hero">
-          <div class="hero-content text-center">
+          <div class="text-center hero-content">
             <div class="max-w-md">
               <h1 class="text-4xl font-bold">SEMUA JENIS CATEGORY FORTUNE</h1>
               <p class="py-3 text-xs text-left">- from team 1 fortune made with ❤️</p>
@@ -167,18 +172,34 @@ const exportToPDF = async () => {
                 </td>
               </tr>
             </template>
+            <div
+              v-if="data.length === 0 && isLoading === false"
+              class="block w-full pl-4 my-5 text-lg font-normal text-left text-red-600"
+            >
+              <p class="block w-full">Data Kategori Yang Anda Cari Tidak Ada.</p>
+            </div>
           </tbody>
         </table>
       </div>
-      <template v-if="errorMessage">
-        {{ errorMessage }}
-      </template>
+
       <div class="flex items-center justify-end gap-5 py-5 mt-3 border-t pe-16 text-TxtPrimary-700">
-        <button class="btn-sm-default" :disabled="currentPage === 1" @click="previousPage">Previous</button>
-        <span
-          >Page <b>{{ currentPage }}</b> of <b>{{ totalPages }}</b></span
+        <button
+          class="cursor-pointer btn-sm-default disabled:bg-slate-200 disabled:cursor-default"
+          :disabled="currentPage === 1"
+          @click="previousPage"
         >
-        <button class="btn-sm-default" :disabled="currentPage === totalPages" @click="nextPage">Next</button>
+          Previous
+        </button>
+        <span
+          >Page <b>{{ currentPage }}</b> of <b>{{ totalPage }}</b></span
+        >
+        <button
+          class="btn-sm-default disabled:bg-slate-200 disabled:cursor-default"
+          :disabled="currentPage === totalPage"
+          @click="nextPage"
+        >
+          Next
+        </button>
       </div>
     </section>
   </div>

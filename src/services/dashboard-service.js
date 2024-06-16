@@ -32,7 +32,7 @@ export const getAllStockReport = async () => {
 export const getPersentaseCategory = async () => {
   try {
     const res = await axios.get(`${import.meta.env.VITE_VUE_APP_BASE_URL}/PersentaseProduk `, headerConfig)
-    return res.data.monthlyData
+    return res.data.productsWithPercentage
   } catch (error) {
     return error.message
   }

@@ -5,7 +5,6 @@ import { useStore } from 'vuex'
 const store = useStore()
 const isScrolled = ref(false)
 const user = computed(() => store.getters.getUser)
-console.log('🚀 ~ user:', user)
 
 const handleScroll = () => {
   isScrolled.value = window.scrollY > 20

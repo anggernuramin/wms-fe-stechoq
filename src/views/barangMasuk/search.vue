@@ -2,16 +2,18 @@
 import { onMounted, ref } from 'vue'
 import { searchBarangMasuk } from '../../services/barang-masuk.service'
 import { useRoute, useRouter } from 'vue-router'
-import { getAllCategory } from '../../services/category.services'
-
+import { useToast } from 'vue-toast-notification'
+import Loading from '../../components/Loading.vue'
 const router = useRouter()
 const barangMasuk = ref([])
 const resultBarangMasuk = ref([])
 const selectCategory = ref('')
-const category = ref([])
 const isLoading = ref(false)
 const currentPage = ref(0)
+const totalPage = ref(0)
+const totalLimit = ref(10)
 const route = useRoute()
+const toast = useToast()
 const query = ref(route.query)
 
 onMounted(() => {
@@ -19,10 +21,13 @@ onMounted(() => {
 })
 
 onMounted(async () => {
+  isLoading.value = true
   try {
-    isLoading.value = true
-    const res = await searchBarangMasuk(query.value)
-    barangMasuk.value = res
+    const res = await searchBarangMasuk(query.value, currentPage.value, totalLimit.value)
+    console.log('🚀 ~ onMounted ~ res:', res)
+    totalPage.value = res.totalPage
+    barangMasuk.value = res.result
+    resultBarangMasuk.value = res.result
     isLoading.value = false
   } catch (error) {
     toast.error(error)
@@ -33,10 +38,10 @@ onMounted(async () => {
 const fetchData = async () => {
   try {
     isLoading.value = true
-    const res = await searchBarangMasuk(query.value)
-    category.value = await getAllCategory()
-    barangMasuk.value = res
-    resultBarangMasuk.value = res
+    const res = await searchBarangMasuk(query.value, currentPage.value, totalLimit.value)
+    totalPage.value = res.totalPage
+    barangMasuk.value = res.result
+    resultBarangMasuk.value = res.result
     isLoading.value = false
   } catch (error) {
     toast.error(error)
@@ -53,24 +58,10 @@ const handleSearchBarangMasuk = async (e) => {
   const queries = query.value
   router.push({ path: '/barang-masuk/search', query: { queries } })
   const res = await searchBarangMasuk(queries)
-  barangMasuk.value = res
-  resultBarangMasuk.value = res
-}
-
-const sortingBarangMasuk = (name) => {
-  selectCategory.value = name
-  if (!name) {
-    return (resultBarangMasuk.value = barangMasuk.value)
-  }
-
-  if (name == 'All') {
-    return (resultBarangMasuk.value = barangMasuk.value)
-  }
-  const filterData = barangMasuk.value.filter((item) => {
-    return item.Kategori.toUpperCase().includes(name.toUpperCase())
-  })
-
-  return (resultBarangMasuk.value = filterData)
+  totalPage.value = res.totalPage
+  barangMasuk.value = res.result
+  barangMasuk.value = res.result
+  resultBarangMasuk.value = res.result
 }
 </script>
 
@@ -84,9 +75,6 @@ const sortingBarangMasuk = (name) => {
           / Search
         </h1>
         <div class="flex gap-3">
-          <button class="flex items-center justify-center gap-2 btn-sm-default">
-            <i class="fas fa-filter"></i>Export
-          </button>
           <router-link to="/barang-masuk/add" class="flex items-center justify-center gap-2 btn-sm-success">
             <i class="fas fa-plus"></i>Tambah Barang Masuk
           </router-link>
@@ -96,16 +84,21 @@ const sortingBarangMasuk = (name) => {
       <hr class="my-4" />
       <div class="flex items-center justify-between px-5 pb-4">
         <h1 class="text-lg font-semibold text-TxtPrimary-700">Barang Masuk</h1>
-        <div class="flex items-center gap-5">
-          <form action="" class="outline-none">
+        <div class="flex items-center gap-5 w-[25%]">
+          <form action="" class="w-full outline-none">
             <label class="py-[6px] px-2 flex items-center rounded-md border text-slate-600 gap-2 bg-secondary">
               <input
                 v-model="query"
                 type="search"
-                class="border-0 outline-none text-slate-600 bg-secondary"
+                class="w-full border-0 outline-none text-slate-600 bg-secondary"
                 placeholder="Search By Name Product"
               />
-              <button type="submit" @click="handleSearchBarangMasuk">
+              <button
+                type="submit"
+                class="flex items-center justify-center gap-2 px-2 py-1 text-white rounded-md bg-btnPrimary"
+                @click="handleSearchBarangMasuk"
+              >
+                Cari
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 16 16"
@@ -121,31 +114,10 @@ const sortingBarangMasuk = (name) => {
               </button>
             </label>
           </form>
-
-          <div class="border rounded-md dropdown dropdown-end">
-            <div
-              tabindex="0"
-              role="button"
-              class="py-[4px] m-1 bg-secondary flex justify-center items-center gap-5 text-sm px-5"
-            >
-              Semua Kategori <i class="text-xs fas fa-chevron-down"></i>
-            </div>
-            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-primary rounded-box w-52">
-              <li v-for="(item, index) in category" :key="index" class="transition-all hover:bg-slate-200">
-                <a @click="sortingBarangMasuk(item.Nama)" class="font-normal text-slate-800">{{ item.Nama }}</a>
-              </li>
-              <li
-                class="py-2 pl-5 pr-2 font-normal transition-all text-slate-800 hover:bg-slate-200"
-                @click="sortingBarangMasuk(All)"
-              >
-                All
-              </li>
-            </ul>
-          </div>
         </div>
       </div>
-      <div v-if="isLoading" class="flex items-center justify-center min-h-[75vh]">
-        <span class="my-16 loading loading-spinner loading-lg"></span>
+      <div v-if="isLoading">
+        <Loading />
       </div>
       <template v-else>
         <table class="table rounded-sm">
@@ -183,21 +155,32 @@ const sortingBarangMasuk = (name) => {
                 </td>
               </tr>
             </template>
-            <div v-else class="block w-full pl-4 my-5 text-lg font-normal text-left text-red-600">
-              <p class="block w-full">
-                Data
-                <span class="font-bold">{{ selectCategory ? `dengan Kategory ${selectCategory}` : null }}</span> Tidak
-                ada
-              </p>
+            <div
+              v-if="resultBarangMasuk.length === 0 || (barangMasuk.length === 0 && isLoading === false)"
+              class="block w-full pl-4 my-5 text-lg font-normal text-left text-red-600"
+            >
+              <p class="block w-full">Data Barang Masuk Yang Anda Cari Tidak Ada.</p>
             </div>
           </tbody>
         </table>
         <div class="flex items-center justify-end gap-5 py-5 mt-3 border-t pe-16 text-TxtPrimary-700">
-          <button class="btn-sm-default">Previous</button>
-          <span
-            >Page <b>{{ currentPage.value }}</b> of <b>10</b></span
+          <button
+            class="cursor-pointer btn-sm-default disabled:bg-slate-200 disabled:cursor-default"
+            :disabled="currentPage === 1"
+            @click="previousPage"
           >
-          <button class="btn-sm-default">Next</button>
+            Previous
+          </button>
+          <span
+            >Page <b>{{ currentPage }}</b> of <b>{{ totalPage }}</b></span
+          >
+          <button
+            class="btn-sm-default disabled:bg-slate-200 disabled:cursor-default"
+            :disabled="currentPage === totalPage"
+            @click="nextPage"
+          >
+            Next
+          </button>
         </div>
       </template>
     </section>
