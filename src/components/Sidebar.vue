@@ -50,7 +50,7 @@ const openOptionProduct = () => {
 
       <div class="flex items-center justify-center gap-3">
         <img src="/assets/images/Layers.svg" alt="" class="object-contain object-center w-12 h-12 ps-3" />
-        <h1 class="text-xl" :class="{ hidden: !store.state.isSidebarOpen }">Future</h1>
+        <h1 class="text-xl" :class="{ hidden: !store.state.isSidebarOpen }">Fortune</h1>
       </div>
     </header>
     <ul class="flex flex-col items-start justify-start w-full h-screen gap-1 px-3 py-6 pt-24 overflow-y-auto">
